@@ -9,6 +9,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFireSignatrure, AActor*, target);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveDamageSignature, float, damage);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorRangeSignature, AActor*, actor);
 
 UCLASS()
 class SPAINGAMEJAM2023_API ABaseTurret : public AActor, public ICombatInterface
@@ -26,7 +27,11 @@ protected:
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void UpdateAttackRangeMesh(float arange);
 
+	UFUNCTION()
+	void OnActorEnterAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	UFUNCTION()
+	void OnActorLeavesAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 public:
 	// Called every frame
@@ -73,10 +78,10 @@ protected:
 	FCombatStats combatStats;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat Interface")
-	bool bIsActive;
+	bool bIsActive = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Stats")
-	float attackRange = 100.f; 
+	float attackRange = 100.f;
 
 	UPROPERTY(EditAnywhere, Category = "Turret Visibility")
 	class UStaticMeshComponent* turretRangeIndicator;
@@ -87,11 +92,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Visibility")
 	TArray<AActor*> closestActors;
 
-	
+
 	// DELEGATES
 	UPROPERTY(BlueprintAssignable)
 	FOnFireSignatrure onFire;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnReceiveDamageSignature onReceiveDamage;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActorRangeSignature onActorEntersRange;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActorRangeSignature onActorLeavesRange;
 };

@@ -15,6 +15,10 @@ ABaseTurret::ABaseTurret()
 	turretRangeCollider = CreateDefaultSubobject<USphereComponent>("AtttackRangeCollider");
 	turretRangeCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	turretRangeCollider->SetCollisionProfileName("TurretRangeIndicator");
+	turretRangeCollider->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
+	
+	turretRangeCollider->OnComponentBeginOverlap.AddDynamic(this, &ABaseTurret::OnActorEnterAttackRange);
+	turretRangeCollider->OnComponentEndOverlap.AddDynamic(this, &ABaseTurret::OnActorLeavesAttackRange);
 
 	turretRangeIndicator = CreateDefaultSubobject<UStaticMeshComponent>("AttackRangeVisible");
 	turretRangeIndicator->AttachToComponent(turretRangeCollider, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
@@ -26,6 +30,7 @@ ABaseTurret::ABaseTurret()
 void ABaseTurret::BeginPlay()
 {
 	Super::BeginPlay();
+	if (!bIsActive) DeactivateTurret();
 
 }
 
@@ -70,6 +75,25 @@ void ABaseTurret::UpdateAttackRangeMesh(float arange) {
 	turretRangeCollider->SetSphereRadius(radius * arange);
 	turretRangeCollider->SetRelativeLocation(FVector{ 0,0, radius * arange });
 
+}
+
+void ABaseTurret::OnActorEnterAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (OtherActor->Implements<UCombatInterface>())
+	{
+		closestActors.Add(OtherActor);
+		onActorEntersRange.Broadcast(OtherActor);
+	}
+}
+
+void ABaseTurret::OnActorLeavesAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	if (OtherActor->Implements<UCombatInterface>())
+	{
+		checkf(closestActors.Find(OtherActor) != INDEX_NONE, TEXT("A Combat interface actor is leaving the attack range but it wasn't registered on enter"));
+		closestActors.Remove(OtherActor);
+		onActorLeavesRange.Broadcast(OtherActor);
+	}
 }
 
 void ABaseTurret::ActivateTurret() {

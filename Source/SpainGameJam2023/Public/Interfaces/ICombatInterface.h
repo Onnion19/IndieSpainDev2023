@@ -3,25 +3,35 @@
 #pragma once
 #include "ICombatInterface.generated.h"
 
+UENUM(BlueprintType)
+enum class ECombatTeam : uint8
+{
+	NEUTRAL UMETA(DisplayName = "Neutral"),
+	FRIENDLY UMETA(DisplayName = "Friendly"), 
+	ENEMY UMETA(DisplayName = "Enemy")
+};
 
 USTRUCT(BlueprintType)
 struct FCombatStats {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float health;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float damage;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float attackSpeed;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float defense;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float piercingDamagePercent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ECombatTeam team;
 };
 
 

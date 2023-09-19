@@ -3,6 +3,7 @@
 
 #include "Actors/BaseTurret.h"
 #include "Components/StaticMeshComponent.h"
+#include "Components/SphereComponent.h"
 
 // Sets default values
 ABaseTurret::ABaseTurret()
@@ -11,8 +12,14 @@ ABaseTurret::ABaseTurret()
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
-	turretRange = CreateDefaultSubobject<UStaticMeshComponent>("AttackRangeCollider");
-	turretRange->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
+	turretRangeCollider = CreateDefaultSubobject<USphereComponent>("AtttackRangeCollider");
+	turretRangeCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
+	turretRangeCollider->SetCollisionProfileName("TurretRangeIndicator");
+
+	turretRangeIndicator = CreateDefaultSubobject<UStaticMeshComponent>("AttackRangeVisible");
+	turretRangeIndicator->AttachToComponent(turretRangeCollider, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
+	turretRangeIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 }
 
 // Called when the game starts or when spawned
@@ -25,13 +32,59 @@ void ABaseTurret::BeginPlay()
 // Called every frame
 void ABaseTurret::Tick(float DeltaTime)
 {
+	ensureMsgf(bIsActive, TEXT("Turret tick called while turret is deactivated"));
 	Super::Tick(DeltaTime);
+}
+
+
+// ICombatInterface 
+
+void ABaseTurret::DealDamage_Implementation(float ammount) const {
 
 }
 
+void ABaseTurret::ReceiveDamage_Implementation(float ammount) {
+	onReceiveDamage.Broadcast(ammount);
+}
+
+FCombatStats ABaseTurret::GetCombatStats_Implementation() const {
+	return combatStats;
+}
+
+void ABaseTurret::SetCombatStats_Implementation(const FCombatStats& stats) {
+	combatStats = stats;
+}
+
+// ~ICombatInterface 
+
+void ABaseTurret::Fire(AActor* target)
+{
+	if (target == nullptr) return;
+
+	onFire.Broadcast(target);
+}
 
 void ABaseTurret::UpdateAttackRangeMesh(float arange) {
+	turretRangeIndicator->SetWorldScale3D(FVector{ arange, arange, arange });
+	const auto radius = static_cast<float>(turretRangeIndicator->GetStaticMesh()->GetBounds().SphereRadius);
+	turretRangeCollider->SetSphereRadius(radius * arange);
+	turretRangeCollider->SetRelativeLocation(FVector{ 0,0, radius * arange });
 
-	turretRange->SetWorldScale3D(FVector{ arange, arange, arange });
 }
 
+void ABaseTurret::ActivateTurret() {
+	bIsActive = true;
+	SetActorTickEnabled(true);
+}
+
+void ABaseTurret::DeactivateTurret() {
+	bIsActive = false;
+	SetActorTickEnabled(false);
+}
+
+void ABaseTurret::ShowAttackRangeIndicator() {
+	turretRangeIndicator->SetVisibility(true, true);
+}
+void ABaseTurret::HideAttackRangeIndicator() {
+	turretRangeIndicator->SetVisibility(false, true);
+}

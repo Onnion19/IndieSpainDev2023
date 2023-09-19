@@ -7,6 +7,9 @@
 #include "Interfaces/ICombatInterface.h"
 #include "BaseTurret.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFireSignatrure, AActor*, target);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveDamageSignature, float, damage);
+
 UCLASS()
 class SPAINGAMEJAM2023_API ABaseTurret : public AActor, public ICombatInterface
 {
@@ -23,32 +26,72 @@ protected:
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void UpdateAttackRangeMesh(float arange);
 
+
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Combat Interface")
+
+	// ICombatInterface 
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
 	void DealDamage(float ammount) const override;
+	void DealDamage_Implementation(float ammount) const;
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Combat Interface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
 	void ReceiveDamage(float ammount) override;
+	void ReceiveDamage_Implementation(float ammount);
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Combat Interface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
 	FCombatStats GetCombatStats() const override;
+	FCombatStats GetCombatStats_Implementation() const;
 
-	UFUNCTION(BlueprintCallable, BlueprintImplementableEvent, Category = "Combat Interface")
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
 	void SetCombatStats(const FCombatStats& stats) override;
+	void SetCombatStats_Implementation(const FCombatStats& stats);
+	// ~ICombatInterface
 
+	UFUNCTION(BlueprintCallable)
+	void Fire(AActor* target);
+
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateTurret();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateTurret();
+
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Turret Stats")
+	void ShowAttackRangeIndicator();
+
+	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Turret Stats")
+	void HideAttackRangeIndicator();
 
 protected:
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Interface")
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat Interface")
 	FCombatStats combatStats;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat Interface")
+	bool bIsActive;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Stats")
 	float attackRange = 100.f; 
 
 	UPROPERTY(EditAnywhere, Category = "Turret Visibility")
-	class UStaticMeshComponent* turretRange;
+	class UStaticMeshComponent* turretRangeIndicator;
 
+	UPROPERTY(VisibleAnywhere, Category = "Turret Visibility")
+	class USphereComponent* turretRangeCollider;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Visibility")
+	TArray<AActor*> closestActors;
+
+	
+	// DELEGATES
+	UPROPERTY(BlueprintAssignable)
+	FOnFireSignatrure onFire;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnReceiveDamageSignature onReceiveDamage;
 };

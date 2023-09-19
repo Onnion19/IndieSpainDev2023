@@ -20,6 +20,9 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION(BlueprintCallable, CallInEditor)
+	void UpdateAttackRangeMesh(float arange);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -39,7 +42,13 @@ public:
 
 protected:
 
-	UPROPERTY(EditAnywhere, Category = "Combat Interface")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat Interface")
 	FCombatStats combatStats;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Stats")
+	float attackRange = 100.f; 
+
+	UPROPERTY(EditAnywhere, Category = "Turret Visibility")
+	class UStaticMeshComponent* turretRange;
 
 };

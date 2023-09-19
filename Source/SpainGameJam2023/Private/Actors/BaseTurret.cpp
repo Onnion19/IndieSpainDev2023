@@ -2,20 +2,24 @@
 
 
 #include "Actors/BaseTurret.h"
+#include "Components/StaticMeshComponent.h"
 
 // Sets default values
 ABaseTurret::ABaseTurret()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
+	turretRange = CreateDefaultSubobject<UStaticMeshComponent>("AttackRangeCollider");
+	turretRange->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 }
 
 // Called when the game starts or when spawned
 void ABaseTurret::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
 }
 
 // Called every frame
@@ -23,5 +27,11 @@ void ABaseTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+}
+
+
+void ABaseTurret::UpdateAttackRangeMesh(float arange) {
+
+	turretRange->SetWorldScale3D(FVector{ arange, arange, arange });
 }
 

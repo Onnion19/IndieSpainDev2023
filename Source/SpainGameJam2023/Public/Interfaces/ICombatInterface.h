@@ -16,19 +16,19 @@ struct FCombatStats {
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float health;
+	float health = 50.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float damage;
+	float damage = 10.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float attackSpeed;
+	float attackSpeed = 1.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float defense;
+	float defense = 3.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float piercingDamagePercent;
+	float piercingDamagePercent = 0.05f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ECombatTeam team;

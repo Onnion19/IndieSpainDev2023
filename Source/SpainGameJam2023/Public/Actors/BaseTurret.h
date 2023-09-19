@@ -7,9 +7,17 @@
 #include "Interfaces/ICombatInterface.h"
 #include "BaseTurret.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnFireSignatrure, AActor*, target);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveDamageSignature, float, damage);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorRangeSignature, AActor*, actor);
+
+
+UENUM(BlueprintType)
+enum class ETurretMode : uint8 {
+	IDLE UMETA(DisplayName = "Idle"), 
+	FIRING UMETA(Displayname = "Firing"),
+	PROCESSING UMETA(DisplayName = "Processing"),
+	RELOADING UMETA(DisplayName = "Reloading")
+};
 
 UCLASS()
 class SPAINGAMEJAM2023_API ABaseTurret : public AActor, public ICombatInterface
@@ -20,18 +28,35 @@ public:
 	// Sets default values for this actor's properties
 	ABaseTurret();
 
+
+private: 
+
+	UFUNCTION()
+	void StartFiringMode();
+
+	UFUNCTION()
+	void StopFiringMode();
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void BeginDestroy() override;
 
 	UFUNCTION(BlueprintCallable, CallInEditor)
 	void UpdateAttackRangeMesh(float arange);
 
 	UFUNCTION()
 	void OnActorEnterAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnActorEnterAttackRangeBP(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UFUNCTION()
 	void OnActorLeavesAttackRange(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnActorLeavesAttackRangeBP(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnFireCommand();
 
 public:
 	// Called every frame
@@ -59,6 +84,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Fire(AActor* target);
 
+	UFUNCTION(BlueprintCallable)
+	void SwapToMode(ETurretMode newMode);
+
+	UFUNCTION(BlueprintCallable)
+	ETurretMode GetTurretMode()const;
 
 	UFUNCTION(BlueprintCallable)
 	void ActivateTurret();
@@ -92,11 +122,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Visibility")
 	TArray<AActor*> closestActors;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Stats")
+	ETurretMode turretMode;
+
+	// Timers
+	UPROPERTY()
+	FTimerHandle firingTimer;
 
 	// DELEGATES
-	UPROPERTY(BlueprintAssignable)
-	FOnFireSignatrure onFire;
-
 	UPROPERTY(BlueprintAssignable)
 	FOnReceiveDamageSignature onReceiveDamage;
 

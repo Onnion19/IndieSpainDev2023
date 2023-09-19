@@ -16,7 +16,7 @@ ABaseTurret::ABaseTurret()
 	turretRangeCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	turretRangeCollider->SetCollisionProfileName("TurretRangeIndicator");
 	turretRangeCollider->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel1);
-	
+
 	turretRangeCollider->OnComponentBeginOverlap.AddDynamic(this, &ABaseTurret::OnActorEnterAttackRange);
 	turretRangeCollider->OnComponentEndOverlap.AddDynamic(this, &ABaseTurret::OnActorLeavesAttackRange);
 
@@ -32,6 +32,12 @@ void ABaseTurret::BeginPlay()
 	Super::BeginPlay();
 	if (!bIsActive) DeactivateTurret();
 
+}
+
+
+void ABaseTurret::BeginDestroy() {
+
+	Super::BeginDestroy();
 }
 
 // Called every frame
@@ -59,14 +65,41 @@ FCombatStats ABaseTurret::GetCombatStats_Implementation() const {
 void ABaseTurret::SetCombatStats_Implementation(const FCombatStats& stats) {
 	combatStats = stats;
 }
-
 // ~ICombatInterface 
 
 void ABaseTurret::Fire(AActor* target)
 {
 	if (target == nullptr) return;
+}
 
-	onFire.Broadcast(target);
+void ABaseTurret::SwapToMode(ETurretMode newMode)
+{
+	if (turretMode == ETurretMode::FIRING)
+	{
+		StopFiringMode();
+	}
+
+	turretMode = newMode;
+	if (turretMode == ETurretMode::FIRING)
+	{
+		StartFiringMode();
+	}
+}
+
+
+void ABaseTurret::StartFiringMode() {
+	ensureMsgf(combatStats.attackSpeed > 0.1f, TEXT("Can't start turret firing sequence: Fire rate to high: %d"), combatStats.attackSpeed);
+	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFireCommand, combatStats.attackSpeed, true);
+}
+
+
+void ABaseTurret::StopFiringMode() {
+	GetWorldTimerManager().ClearTimer(firingTimer);
+}
+
+ETurretMode ABaseTurret::GetTurretMode()const
+{
+	return turretMode;
 }
 
 void ABaseTurret::UpdateAttackRangeMesh(float arange) {
@@ -82,6 +115,7 @@ void ABaseTurret::OnActorEnterAttackRange(UPrimitiveComponent* OverlappedCompone
 	if (OtherActor->Implements<UCombatInterface>())
 	{
 		closestActors.Add(OtherActor);
+		OnActorEnterAttackRangeBP(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
 		onActorEntersRange.Broadcast(OtherActor);
 	}
 }
@@ -92,6 +126,7 @@ void ABaseTurret::OnActorLeavesAttackRange(UPrimitiveComponent* OverlappedCompon
 	{
 		checkf(closestActors.Find(OtherActor) != INDEX_NONE, TEXT("A Combat interface actor is leaving the attack range but it wasn't registered on enter"));
 		closestActors.Remove(OtherActor);
+		OnActorLeavesAttackRangeBP(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
 		onActorLeavesRange.Broadcast(OtherActor);
 	}
 }

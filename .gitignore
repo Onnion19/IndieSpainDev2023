@@ -1,0 +1,16 @@
+#git folders
+.git/
+
+#Unreal folders
+Platforms/
+Binaries/
+Intermediate/
+Saved/
+DerivedDataCache/
+
+
+
+# Visual studio files
+.vs/
+*.sln
+*.vsconfig

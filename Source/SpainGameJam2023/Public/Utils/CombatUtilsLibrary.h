@@ -18,10 +18,10 @@ class SPAINGAMEJAM2023_API UCombatUtilsLibrary : public UBlueprintFunctionLibrar
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Combat Utils")
-	static void ResolveCombatStatsByActors(TScriptInterface<ICombatInterface> dealer, TScriptInterface<ICombatInterface> receiver);
+	static void ResolveCombatStatsByActors(AActor* dealer, AActor* receiver);
 
 	UFUNCTION(BlueprintCallable, Category = "Combat Utils")
-	static void ResolveMultipleCombatStatsByActors(TScriptInterface<ICombatInterface> dealer, TArray<TScriptInterface<ICombatInterface>> receiver);
+	static void ResolveMultipleCombatStatsByActors(AActor* dealer, TArray<AActor*> receivers);
 
 private: 
 

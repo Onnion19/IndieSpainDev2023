@@ -4,6 +4,7 @@
 #include "Actors/BaseTurret.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Utils/CombatUtilsLibrary.h"
 
 // Sets default values
 ABaseTurret::ABaseTurret()
@@ -70,6 +71,8 @@ void ABaseTurret::SetCombatStats_Implementation(const FCombatStats& stats) {
 void ABaseTurret::Fire(AActor* target)
 {
 	if (target == nullptr) return;
+
+	UCombatUtilsLibrary::ResolveCombatStatsByActors(this, target);
 }
 
 void ABaseTurret::SwapToMode(ETurretMode newMode)

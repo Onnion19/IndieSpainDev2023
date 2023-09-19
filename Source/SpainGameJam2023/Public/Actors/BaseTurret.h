@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorRangeSignature, AActor*, act
 
 UENUM(BlueprintType)
 enum class ETurretMode : uint8 {
-	IDLE UMETA(DisplayName = "Idle"), 
+	IDLE UMETA(DisplayName = "Idle"),
 	FIRING UMETA(Displayname = "Firing"),
 	PROCESSING UMETA(DisplayName = "Processing"),
 	RELOADING UMETA(DisplayName = "Reloading")
@@ -29,7 +29,7 @@ public:
 	ABaseTurret();
 
 
-private: 
+private:
 
 	UFUNCTION()
 	void StartFiringMode();
@@ -64,21 +64,10 @@ public:
 
 
 	// ICombatInterface 
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
-	void DealDamage(float ammount) const override;
-	void DealDamage_Implementation(float ammount) const;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
-	void ReceiveDamage(float ammount) override;
-	void ReceiveDamage_Implementation(float ammount);
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
-	FCombatStats GetCombatStats() const override;
-	FCombatStats GetCombatStats_Implementation() const;
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Combat Interface")
-	void SetCombatStats(const FCombatStats& stats) override;
-	void SetCombatStats_Implementation(const FCombatStats& stats);
+	void DealDamage_Implementation(float ammount) const override;
+	void ReceiveDamage_Implementation(float ammount) override;
+	FCombatStats GetCombatStats_Implementation() const override;
+	void SetCombatStats_Implementation(const FCombatStats& stats) override;
 	// ~ICombatInterface
 
 	UFUNCTION(BlueprintCallable)

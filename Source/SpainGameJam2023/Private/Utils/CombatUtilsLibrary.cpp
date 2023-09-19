@@ -17,17 +17,28 @@ float UCombatUtilsLibrary::ResolveCombatStats(const FCombatStats& dealer, const 
 
 
 
-void UCombatUtilsLibrary::ResolveCombatStatsByActors(TScriptInterface<ICombatInterface> dealer, TScriptInterface<ICombatInterface> receiver)
+void UCombatUtilsLibrary::ResolveCombatStatsByActors(AActor* dealer, AActor* receiver)
 {
-	if (dealer == nullptr || receiver == nullptr) return;
+	if (!dealer || !receiver) return;
+	if (!dealer->Implements<UCombatInterface>() || !receiver->Implements<UCombatInterface>())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Either Receiver or Dealer does not implement UCombatInterface"));
+		return;
+	}
 
-	const auto damage = ResolveCombatStats(dealer->GetCombatStats(), receiver->GetCombatStats());
-	dealer->DealDamage(damage);
-	receiver->ReceiveDamage(damage);
+
+	TScriptInterface<ICombatInterface> d{ dealer };
+	TScriptInterface<ICombatInterface> r{ receiver };
+
+	const auto damage = ResolveCombatStats(d->Execute_GetCombatStats(dealer), r->Execute_GetCombatStats(receiver));
+	UE_LOG(LogTemp, Log, TEXT("Dealing damage to entity"));
+	d->Execute_DealDamage(dealer, damage);
+	UE_LOG(LogTemp, Log, TEXT("Receiving Damage from eneity"));
+	r->Execute_ReceiveDamage(receiver, damage);
 }
 
 
-void UCombatUtilsLibrary::ResolveMultipleCombatStatsByActors(TScriptInterface<ICombatInterface> dealer, TArray<TScriptInterface<ICombatInterface>> receiver)
+void UCombatUtilsLibrary::ResolveMultipleCombatStatsByActors(AActor* dealer, TArray<AActor*> receivers)
 {
-	std::for_each(receiver.begin(), receiver.end(), [&](const auto r) {UCombatUtilsLibrary::ResolveCombatStatsByActors(dealer, r); });
+	std::for_each(receivers.begin(), receivers.end(), [&](const auto r) {UCombatUtilsLibrary::ResolveCombatStatsByActors(dealer, r); });
 }

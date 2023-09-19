@@ -47,15 +47,15 @@ class ICombatInterface
 
 public:
 
-	UFUNCTION()
-	virtual void DealDamage(float ammount) const = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	void DealDamage(float ammount) const;
 
-	UFUNCTION()
-	virtual void ReceiveDamage(float ammount) = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	void ReceiveDamage(float ammount);
 
-	UFUNCTION()
-	virtual FCombatStats GetCombatStats() const = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	FCombatStats GetCombatStats() const;
 
-	UFUNCTION()
-	virtual void SetCombatStats(const FCombatStats& stats) = 0;
+	UFUNCTION(BlueprintNativeEvent)
+	void SetCombatStats(const FCombatStats& stats);
 };

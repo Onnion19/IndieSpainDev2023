@@ -23,6 +23,15 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Combat Utils")
 	static void ResolveMultipleCombatStatsByActors(AActor* dealer, TArray<AActor*> receivers);
 
+	UFUNCTION(BlueprintCallable)
+	static FCombatStats Multiply(const FCombatStats& stats, float multiplier);
+
+	UFUNCTION(BlueprintCallable)
+	static FCombatStats Add(const FCombatStats& a, const FCombatStats& b);
+
+	UFUNCTION(BlueprintCallable)
+	static FCombatStats Withdraw(const FCombatStats& a, const FCombatStats& b);
+
 private: 
 
 	UFUNCTION()

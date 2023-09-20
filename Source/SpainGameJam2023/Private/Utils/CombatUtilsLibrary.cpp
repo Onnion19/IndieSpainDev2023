@@ -45,3 +45,39 @@ void UCombatUtilsLibrary::ResolveMultipleCombatStatsByActors(AActor* dealer, TAr
 {
 	std::for_each(receivers.begin(), receivers.end(), [&](const auto r) {UCombatUtilsLibrary::ResolveCombatStatsByActors(dealer, r); });
 }
+
+FCombatStats UCombatUtilsLibrary::Multiply(const FCombatStats& stats, float multiplier)
+{
+	return {
+		stats.health * multiplier,
+		stats.damage * multiplier,
+		stats.attackSpeed * multiplier,
+		stats.defense * multiplier,
+		stats.piercingDamagePercent * multiplier,
+		stats.team
+	};
+}
+
+FCombatStats UCombatUtilsLibrary::Add(const FCombatStats& a, const FCombatStats& b)
+{
+	return {
+		a.health + b.health,
+		a.damage + b.damage,
+		a.attackSpeed + b.attackSpeed,
+		a.defense + b.defense,
+		a.piercingDamagePercent + b.piercingDamagePercent,
+		a.team
+	};
+}
+
+FCombatStats UCombatUtilsLibrary::Withdraw(const FCombatStats& a, const FCombatStats& b)
+{
+	return {
+		a.health - b.health,
+		a.damage - b.damage,
+		a.attackSpeed - b.attackSpeed,
+		a.defense - b.defense,
+		a.piercingDamagePercent - b.piercingDamagePercent,
+		a.team
+	};
+}

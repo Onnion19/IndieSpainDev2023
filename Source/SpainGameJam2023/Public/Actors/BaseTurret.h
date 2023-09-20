@@ -68,7 +68,7 @@ public:
 	// ICombatInterface 
 	void DealDamage_Implementation(float ammount) const override;
 	void ReceiveDamage_Implementation(float ammount) override;
-	FCombatStats GetCombatStats_Implementation() const override;
+	void GetCombatStats_Implementation(FCombatStats& out) const override;
 	void SetCombatStats_Implementation(const FCombatStats& stats) override;
 	// ~ICombatInterface
 
@@ -120,7 +120,7 @@ protected:
 	ETurretMode turretMode;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buidling")
-	float buildSpawnOffset = 50.f;
+	float rangeAreaOffset = 50.f;
 
 	// Timers
 	UPROPERTY()

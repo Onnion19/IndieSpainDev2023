@@ -6,6 +6,8 @@
 #include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
 #include "Utils/CombatUtilsLibrary.h"
+#include "GameInstanceManagers.h"
+#include "TurretsManager.h"
 
 // Sets default values
 ABaseTurret::ABaseTurret()
@@ -34,21 +36,21 @@ ABaseTurret::ABaseTurret()
 	buildingCollider->SetCollisionProfileName({ "ConstructionBuilding" });
 
 
-	// Initialize variables
-	SwapToMode(ETurretMode::IDLE);
+
 }
 
 // Called when the game starts or when spawned
 void ABaseTurret::BeginPlay()
 {
+	// Initialize variables
 	Super::BeginPlay();
-	if (!bIsActive) DeactivateTurret();
+	SwapToMode(ETurretMode::IDLE);
+	ActivateTurret();
 
 }
 
 
 void ABaseTurret::BeginDestroy() {
-
 	Super::BeginDestroy();
 }
 
@@ -70,8 +72,8 @@ void ABaseTurret::ReceiveDamage_Implementation(float ammount) {
 	onReceiveDamage.Broadcast(ammount);
 }
 
-FCombatStats ABaseTurret::GetCombatStats_Implementation() const {
-	return combatStats;
+void ABaseTurret::GetCombatStats_Implementation(FCombatStats& out) const {
+	out = combatStats;
 }
 
 void ABaseTurret::SetCombatStats_Implementation(const FCombatStats& stats) {
@@ -100,15 +102,19 @@ void ABaseTurret::Fire(AActor* target)
 
 void ABaseTurret::SwapToMode(ETurretMode newMode)
 {
-	if (turretMode == ETurretMode::FIRING)
-	{
-		StopFiringMode();
-	}
 
+	StopFiringMode();
 	turretMode = newMode;
 	if (turretMode == ETurretMode::FIRING)
 	{
 		StartFiringMode();
+		if (bIsActive)
+			SetActorTickEnabled(true);
+	}
+	else
+	{
+		// only tick when requires to fire
+		SetActorTickEnabled(false);
 	}
 }
 
@@ -120,7 +126,9 @@ void ABaseTurret::StartFiringMode() {
 
 
 void ABaseTurret::StopFiringMode() {
-	GetWorldTimerManager().ClearTimer(firingTimer);
+	auto& timerManager = GetWorldTimerManager();
+	if (timerManager.IsTimerActive(firingTimer))
+		timerManager.ClearTimer(firingTimer);
 }
 
 ETurretMode ABaseTurret::GetTurretMode()const
@@ -129,10 +137,11 @@ ETurretMode ABaseTurret::GetTurretMode()const
 }
 
 void ABaseTurret::UpdateAttackRangeMesh(float arange) {
-	turretRangeIndicator->SetWorldScale3D(FVector{ arange, arange, arange });
+
 	const auto radius = static_cast<float>(turretRangeIndicator->GetStaticMesh()->GetBounds().SphereRadius);
-	turretRangeCollider->SetSphereRadius(radius * arange);
-	turretRangeCollider->SetRelativeLocation(FVector{ 0,0, radius * arange });
+	turretRangeIndicator->SetWorldScale3D(FVector{ arange, arange, arange } / radius);
+	turretRangeCollider->SetSphereRadius(arange / 2);
+	turretRangeCollider->SetRelativeLocation(FVector{ 0,0, (arange / 2) + rangeAreaOffset});
 
 }
 
@@ -159,12 +168,10 @@ void ABaseTurret::OnActorLeavesAttackRange(UPrimitiveComponent* OverlappedCompon
 
 void ABaseTurret::ActivateTurret() {
 	bIsActive = true;
-	SetActorTickEnabled(true);
 }
 
 void ABaseTurret::DeactivateTurret() {
 	bIsActive = false;
-	SetActorTickEnabled(false);
 }
 
 void ABaseTurret::ShowAttackRangeIndicator() {

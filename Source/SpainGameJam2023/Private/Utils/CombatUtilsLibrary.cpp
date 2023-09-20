@@ -30,7 +30,10 @@ void UCombatUtilsLibrary::ResolveCombatStatsByActors(AActor* dealer, AActor* rec
 	TScriptInterface<ICombatInterface> d{ dealer };
 	TScriptInterface<ICombatInterface> r{ receiver };
 
-	const auto damage = ResolveCombatStats(d->Execute_GetCombatStats(dealer), r->Execute_GetCombatStats(receiver));
+	FCombatStats d_s{}; d->Execute_GetCombatStats(dealer, d_s);
+	FCombatStats r_s{}; r->Execute_GetCombatStats(receiver, r_s);
+
+	const auto damage = ResolveCombatStats(d_s, r_s);
 	UE_LOG(LogTemp, Log, TEXT("Dealing damage to entity"));
 	d->Execute_DealDamage(dealer, damage);
 	UE_LOG(LogTemp, Log, TEXT("Receiving Damage from eneity"));

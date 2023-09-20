@@ -2,4 +2,41 @@
 
 
 #include "GameInstanceManagers.h"
+#include "Energy/EnergyManager.h"
+#include "HUD/HUDManager.h"
+#include "TurretsManager.h"
 
+void UGameInstanceManagers::CreateEnergyManager()
+{
+	energyManager = NewObject<UEnergyManager>(this, { "Energy Managaer" });
+	ensureMsgf(energyManager, TEXT("Error generating energy manager"));
+}
+void UGameInstanceManagers::CreateHudManager()
+{
+	hudManager = GetWorld()->SpawnActor<AHUDManager>(AHUDManager::StaticClass());
+	ensureMsgf(hudManager, TEXT("Hud manager could not generated"));
+}
+
+void UGameInstanceManagers::CreateTurretsManager()
+{
+	turretsManager = NewObject<UTurretsManager>(this, { "Turrets Manager" });
+	ensureMsgf(turretsManager, TEXT("Turrets manager could not be generated"));
+}
+
+
+void UGameInstanceManagers::Init()
+{
+
+	CreateEnergyManager();
+	CreateTurretsManager();
+	CreateHudManager();
+	Super::Init();
+}
+
+void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
+{
+	stage = newStage;
+	energyManager->OnChangeGameStage(stage);
+	turretsManager->OnChangeGameStage(stage);
+	hudManager->ChangeStage(stage);
+}

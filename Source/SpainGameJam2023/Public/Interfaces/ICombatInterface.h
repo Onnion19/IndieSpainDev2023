@@ -54,7 +54,7 @@ public:
 	void ReceiveDamage(float ammount);
 
 	UFUNCTION(BlueprintNativeEvent)
-	FCombatStats GetCombatStats() const;
+	void GetCombatStats(FCombatStats& out) const;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void SetCombatStats(const FCombatStats& stats);

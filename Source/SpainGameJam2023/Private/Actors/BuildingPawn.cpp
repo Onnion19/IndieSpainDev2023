@@ -4,6 +4,8 @@
 #include "Actors/BuildingPawn.h"
 #include "Actors/BaseTurret.h"
 #include "Actors/BaseBuildingActor.h"
+#include "GameInstanceManagers.h"
+#include "TurretsManager.h"
 
 // Sets default values
 ABuildingPawn::ABuildingPawn()
@@ -38,11 +40,18 @@ void ABuildingPawn::Tick(float DeltaTime)
 		FCollisionQueryParams params; 
 		params.AddIgnoredActor(this);
 		// See where the mouse is pointint to place the new turret
-		if (GetWorld()->LineTraceSingleByChannel(hit, worldlLocation, worldlLocation + (worldDirection * 5000), ECollisionChannel::ECC_GameTraceChannel4, params))
+		if (GetWorld()->LineTraceSingleByChannel(hit, worldlLocation, worldlLocation + (worldDirection * 10000), ECollisionChannel::ECC_GameTraceChannel4, params))
 		{
 			const auto& hitLocation = hit.Location;
 			currentObject->SetActorLocation(hitLocation);
+			DrawDebugLine(GetWorld(), worldlLocation, hit.Location, FColor::Green, false, 0.3f, 0u, 0.2f);
 		}
+		else
+		{
+			DrawDebugLine(GetWorld(), worldlLocation, worldlLocation + (worldDirection * 5000), FColor::Red, false, 1.f, 0u, 0.5f);
+		}
+
+
 	}
 }
 
@@ -68,6 +77,7 @@ void ABuildingPawn::PossessedBy(AController* NewController)
 
 	playerController->bShowMouseCursor = true;
 }
+
 void ABuildingPawn::UnPossessed()
 {
 
@@ -105,4 +115,21 @@ void ABuildingPawn::PlaceCurrentActor() {
 
 	auto newTurret = GetWorld()->SpawnActor<ABaseTurret>(selectedTurret, currentObject->GetActorTransform(), params);
 	ensureMsgf(newTurret, TEXT("Trying to spawn an invaldi turret"));
+
+	auto gInstance  = Cast<UGameInstanceManagers>(GetWorld()->GetGameInstance());
+	if (!gInstance)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not fetch game instance with class UGameInstanceManagers"));
+		return;
+	}
+
+	auto turretsManager = gInstance->GetTurretsManager();
+	if (!turretsManager)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not fetch turrets manager from game instance"));
+		return;
+	}
+
+	turretsManager->AddTurret(newTurret);
+
 }

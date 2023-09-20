@@ -4,18 +4,55 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+#include "Utils/GameTypes.h"
 #include "GameInstanceManagers.generated.h"
 
 /**
- * 
+ *
  */
 UCLASS()
 class SPAINGAMEJAM2023_API UGameInstanceManagers : public UGameInstance
 {
 	GENERATED_BODY()
 
-public: 
+private:
+	void CreateEnergyManager();
+	void CreateHudManager();
+	void CreateTurretsManager();
+
+public:
+	void Init() override;
+
+	UFUNCTION(BlueprintCallable)
+	class UEnergyManager* GetEnergyManager() const { return energyManager; }
+
+	UFUNCTION(BlueprintCallable)
+	class AHUDManager* GetHudManager() const { return hudManager; }
+
+	UFUNCTION(BlueprintCallable)
+	class UTurretsManager* GetTurretsManager() const { return turretsManager; }
 
 
-	
+	UFUNCTION(BlueprintCallable)
+	void ChangeGameStage(EGameModeStage newStage);
+
+	UFUNCTION(BlueprintCallable)
+	EGameModeStage GetCurrentStage()const { return stage; }
+
+protected:
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
+	class UEnergyManager* energyManager;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
+	class AHUDManager* hudManager;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
+	class UTurretsManager* turretsManager;
+
+	UPROPERTY(BlueprintReadOnly)
+	EGameModeStage stage;
+
+
 };

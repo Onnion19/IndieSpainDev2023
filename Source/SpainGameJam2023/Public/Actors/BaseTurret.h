@@ -58,6 +58,8 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnFireCommand();
 
+	UFUNCTION()
+	void OnFire();
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -111,8 +113,14 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Visibility")
 	TArray<AActor*> closestActors;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
+	class UBoxComponent* buildingCollider;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Stats")
 	ETurretMode turretMode;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buidling")
+	float buildSpawnOffset = 50.f;
 
 	// Timers
 	UPROPERTY()

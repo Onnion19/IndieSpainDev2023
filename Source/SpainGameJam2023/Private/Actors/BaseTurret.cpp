@@ -4,6 +4,7 @@
 #include "Actors/BaseTurret.h"
 #include "Components/StaticMeshComponent.h"
 #include "Components/SphereComponent.h"
+#include "Components/BoxComponent.h"
 #include "Utils/CombatUtilsLibrary.h"
 
 // Sets default values
@@ -13,6 +14,7 @@ ABaseTurret::ABaseTurret()
 	PrimaryActorTick.bCanEverTick = true;
 
 	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
+	// Turret Range
 	turretRangeCollider = CreateDefaultSubobject<USphereComponent>("AtttackRangeCollider");
 	turretRangeCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	turretRangeCollider->SetCollisionProfileName("TurretRangeIndicator");
@@ -21,10 +23,19 @@ ABaseTurret::ABaseTurret()
 	turretRangeCollider->OnComponentBeginOverlap.AddDynamic(this, &ABaseTurret::OnActorEnterAttackRange);
 	turretRangeCollider->OnComponentEndOverlap.AddDynamic(this, &ABaseTurret::OnActorLeavesAttackRange);
 
+	// Turret Indicator
 	turretRangeIndicator = CreateDefaultSubobject<UStaticMeshComponent>("AttackRangeVisible");
 	turretRangeIndicator->AttachToComponent(turretRangeCollider, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	turretRangeIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+	// Turret Bulding collider
+	buildingCollider = CreateDefaultSubobject<UBoxComponent>("BuldingCollider");
+	buildingCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
+	buildingCollider->SetCollisionProfileName({ "ConstructionBuilding" });
+
+
+	// Initialize variables
+	SwapToMode(ETurretMode::IDLE);
 }
 
 // Called when the game starts or when spawned
@@ -68,6 +79,18 @@ void ABaseTurret::SetCombatStats_Implementation(const FCombatStats& stats) {
 }
 // ~ICombatInterface 
 
+
+void ABaseTurret::OnFire()
+{
+	if (closestActors.IsEmpty())
+	{
+		// nothing to do
+		return;
+	}
+
+	OnFireCommand();
+}
+
 void ABaseTurret::Fire(AActor* target)
 {
 	if (target == nullptr) return;
@@ -92,7 +115,7 @@ void ABaseTurret::SwapToMode(ETurretMode newMode)
 
 void ABaseTurret::StartFiringMode() {
 	ensureMsgf(combatStats.attackSpeed > 0.1f, TEXT("Can't start turret firing sequence: Fire rate to high: %d"), combatStats.attackSpeed);
-	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFireCommand, combatStats.attackSpeed, true);
+	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFire, combatStats.attackSpeed, true);
 }
 
 

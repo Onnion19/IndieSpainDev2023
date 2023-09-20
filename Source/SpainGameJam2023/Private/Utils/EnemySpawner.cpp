@@ -95,7 +95,6 @@ void AEnemySpawner::OnDelayTimer()
 {
 	StopTimer(delayHandle);
 	GetWorldTimerManager().SetTimer(spawnHandle, this, &AEnemySpawner::OnSpawnTimer, currentSubWave->spawnRate, true);
-
 }
 
 void AEnemySpawner::OnSpawnTimer()

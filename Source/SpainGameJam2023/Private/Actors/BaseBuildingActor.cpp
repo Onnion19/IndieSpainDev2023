@@ -3,6 +3,7 @@
 
 #include "Actors/BaseBuildingActor.h"
 #include "Components/BoxComponent.h"
+#include <algorithm>
 
 // Sets default values
 ABaseBuildingActor::ABaseBuildingActor()
@@ -30,11 +31,14 @@ void ABaseBuildingActor::BeginPlay()
 {
 	Super::BeginPlay();
 	materialInstance = UMaterialInstanceDynamic::Create(material, this);
-	if (meshComponent)
-	{
-		meshComponent->SetMaterial(0, materialInstance);
-		materialInstance->SetVectorParameterValue(materialColorVariable, FColor::Green);
-	}
+	materialInstance->SetVectorParameterValue(materialColorVariable, FColor::Green);
+
+	auto components = GetComponentsByClass(UStaticMeshComponent::StaticClass());
+
+	std::for_each(components.begin(), components.end(), [&](UActorComponent* component) {
+		auto mesh = Cast<UStaticMeshComponent>(component);
+		mesh->SetMaterial(0, materialInstance);
+		});
 }
 
 // Called every frame

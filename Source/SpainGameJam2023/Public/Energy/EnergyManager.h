@@ -4,13 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
+#include "BaseManager.h"
 #include "EnergyManager.generated.h"
 
 /**
  *
  */
 UCLASS()
-class SPAINGAMEJAM2023_API UEnergyManager : public UObject
+class SPAINGAMEJAM2023_API UEnergyManager : public UBaseManager
 {
 	GENERATED_BODY()
 public:
@@ -48,7 +49,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMaxEnergy(float newAmmount);
 
+	UFUNCTION(BlueprintCallable)
+	void ResetToDefaults();
 
+	void OnChangeGameStage(EGameModeStage newStage) override;
 
 protected:
 

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Utils/GameTypes.h"
 #include "AllAgainstTheStarsGameMde.generated.h"
 
 /**
@@ -13,5 +14,21 @@ UCLASS()
 class SPAINGAMEJAM2023_API AAllAgainstTheStarsGameMde : public AGameModeBase
 {
 	GENERATED_BODY()
+
+private: 
+
+	void CreateEnergyManager();
+	void CreateHudManager();
+
+public: 
+	void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+protected: 
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
+	class UEnergyManager* energyManager;
 	
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
+	class AHUDManager* hudManager;
 };

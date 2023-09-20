@@ -4,6 +4,28 @@
 #include "Energy/EnergyManager.h"
 #include <algorithm>
 
+
+
+
+void UEnergyManager::ResetToDefaults()
+{
+	StopGenerationRate();
+	generationTime = 0.5;
+	generationRate = 0.5f;
+	accumulatedEnergy = 0.f;
+	maxAccumulatedEnergy = 10.f;
+}
+
+void UEnergyManager::OnChangeGameStage(EGameModeStage newStage)
+{
+	Super::OnChangeGameStage(newStage);
+
+	if (newStage == EGameModeStage::COMBAT)
+		StartGenerationRate();
+	else
+		StopGenerationRate();
+}
+
 bool UEnergyManager::HasEnoughEnergy(float ammount)const {
 	return accumulatedEnergy >= ammount;
 }
@@ -27,7 +49,9 @@ void UEnergyManager::StartGenerationRate() {
 }
 
 void UEnergyManager::StopGenerationRate() {
-	GetWorld()->GetTimerManager().ClearTimer(generationHandle);
+	auto& timermanager = GetWorld()->GetTimerManager();
+	if(timermanager.IsTimerActive(generationHandle))
+		timermanager.ClearTimer(generationHandle);
 }
 
 void UEnergyManager::SetGenerationRate(float newGenerationRate, bool updateTimer) {

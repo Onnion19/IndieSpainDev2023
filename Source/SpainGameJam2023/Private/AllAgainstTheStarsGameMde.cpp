@@ -2,4 +2,12 @@
 
 
 #include "AllAgainstTheStarsGameMde.h"
+#include "Energy/EnergyManager.h"
+void AAllAgainstTheStarsGameMde::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
 
+	energyManager = NewObject<UEnergyManager>(this, { "Energy Managaer" });
+	ensureMsgf(energyManager, TEXT("Error generating energy manager"));
+
+}

@@ -34,9 +34,8 @@ void UCombatUtilsLibrary::ResolveCombatStatsByActors(AActor* dealer, AActor* rec
 	FCombatStats r_s{}; r->Execute_GetCombatStats(receiver, r_s);
 
 	const auto damage = ResolveCombatStats(d_s, r_s);
-	UE_LOG(LogTemp, Log, TEXT("Dealing damage to entity"));
+	UE_LOG(LogTemp, Log, TEXT("%s Deals damage %d to %s"), *(dealer->GetName()) , damage, *(receiver->GetName()));
 	d->Execute_DealDamage(dealer, damage);
-	UE_LOG(LogTemp, Log, TEXT("Receiving Damage from eneity"));
 	r->Execute_ReceiveDamage(receiver, damage);
 }
 

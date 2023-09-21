@@ -40,6 +40,13 @@ void ABaseEnemy::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		OnHitCombat(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 		OnHitCombatBP(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	}
+
+	Destroy();
+}
+
+void ABaseEnemy::OnHitCombat(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	UCombatUtilsLibrary::ResolveCombatStatsByActors(this, OtherActor);
 }
 
 // Called every frame

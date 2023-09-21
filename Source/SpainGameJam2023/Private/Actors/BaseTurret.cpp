@@ -133,7 +133,7 @@ void ABaseTurret::UpdateAttackRangeMesh(float arange) {
 	const auto radius = static_cast<float>(turretRangeIndicator->GetStaticMesh()->GetBounds().SphereRadius);
 	turretRangeIndicator->SetWorldScale3D(FVector{ arange, arange, arange } / radius);
 	turretRangeCollider->SetSphereRadius(arange / 2);
-	turretRangeCollider->SetRelativeLocation(FVector{ 0,0, (arange / 2) + rangeAreaOffset});
+	turretRangeCollider->SetRelativeLocation(FVector{ 0,0, (arange / 2) + rangeAreaOffset });
 
 }
 
@@ -151,10 +151,11 @@ void ABaseTurret::OnActorLeavesAttackRange(UPrimitiveComponent* OverlappedCompon
 {
 	if (OtherActor->Implements<UCombatInterface>())
 	{
-		checkf(closestActors.Find(OtherActor) != INDEX_NONE, TEXT("A Combat interface actor is leaving the attack range but it wasn't registered on enter"));
-		closestActors.Remove(OtherActor);
-		OnActorLeavesAttackRangeBP(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
-		onActorLeavesRange.Broadcast(OtherActor);
+		auto ammount = closestActors.Remove(OtherActor);
+		if (ammount > 0) {
+			OnActorLeavesAttackRangeBP(OverlappedComponent, OtherActor, OtherComp, OtherBodyIndex);
+			onActorLeavesRange.Broadcast(OtherActor);
+		}
 	}
 }
 

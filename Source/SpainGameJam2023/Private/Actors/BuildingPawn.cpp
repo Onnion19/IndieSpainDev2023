@@ -4,7 +4,9 @@
 #include "Actors/BuildingPawn.h"
 #include "Actors/BaseTurret.h"
 #include "Actors/BaseBuildingActor.h"
+#include "Actors/PlaceableBaseActor.h"
 #include "GameInstanceManagers.h"
+#include "Actors/GameplayManager.h"
 #include "TurretsManager.h"
 
 // Sets default values
@@ -37,7 +39,7 @@ void ABuildingPawn::Tick(float DeltaTime)
 	if (pController->DeprojectMousePositionToWorld(worldlLocation, worldDirection))
 	{
 		FHitResult hit{};
-		FCollisionQueryParams params; 
+		FCollisionQueryParams params;
 		params.AddIgnoredActor(this);
 		// See where the mouse is pointint to place the new turret
 		if (GetWorld()->LineTraceSingleByChannel(hit, worldlLocation, worldlLocation + (worldDirection * 10000), ECollisionChannel::ECC_GameTraceChannel4, params))
@@ -85,7 +87,7 @@ void ABuildingPawn::UnPossessed()
 
 
 
-void ABuildingPawn::PickBuildingObject(TSubclassOf<ABaseTurret> object) {
+void ABuildingPawn::PickBuildingObject(TSubclassOf<APlaceableBaseActor> object) {
 
 	auto candidate = buildingModels.Find(object);
 	if (!candidate)
@@ -94,7 +96,7 @@ void ABuildingPawn::PickBuildingObject(TSubclassOf<ABaseTurret> object) {
 		return;
 	}
 
-	selectedTurret = object;
+	selectedActor = object;
 
 	if (currentObject) {
 		currentObject->Destroy();
@@ -113,10 +115,10 @@ void ABuildingPawn::PlaceCurrentActor() {
 	FActorSpawnParameters params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	auto newTurret = GetWorld()->SpawnActor<ABaseTurret>(selectedTurret, currentObject->GetActorTransform(), params);
+	auto newTurret = GetWorld()->SpawnActor<ABaseTurret>(selectedActor, currentObject->GetActorTransform(), params);
 	ensureMsgf(newTurret, TEXT("Trying to spawn an invaldi turret"));
 
-	auto gInstance  = Cast<UGameInstanceManagers>(GetWorld()->GetGameInstance());
+	auto gInstance = Cast<UGameInstanceManagers>(GetWorld()->GetGameInstance());
 	if (!gInstance)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not fetch game instance with class UGameInstanceManagers"));
@@ -130,6 +132,10 @@ void ABuildingPawn::PlaceCurrentActor() {
 		return;
 	}
 
+	// [TODO] Probably this turrets manager can be removed
 	turretsManager->AddTurret(newTurret);
+	auto gampleyManager = gInstance->GetGameplaymanager();
+	if (!gampleyManager) return;
+	gampleyManager->PlayerStructureCreated(newTurret);
 
 }

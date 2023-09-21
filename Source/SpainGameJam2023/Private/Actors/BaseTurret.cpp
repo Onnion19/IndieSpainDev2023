@@ -15,7 +15,6 @@ ABaseTurret::ABaseTurret()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	RootComponent = CreateDefaultSubobject<USceneComponent>("Root");
 	// Turret Range
 	turretRangeCollider = CreateDefaultSubobject<USphereComponent>("AtttackRangeCollider");
 	turretRangeCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
@@ -29,13 +28,6 @@ ABaseTurret::ABaseTurret()
 	turretRangeIndicator = CreateDefaultSubobject<UStaticMeshComponent>("AttackRangeVisible");
 	turretRangeIndicator->AttachToComponent(turretRangeCollider, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	turretRangeIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
-	// Turret Bulding collider
-	buildingCollider = CreateDefaultSubobject<UBoxComponent>("BuldingCollider");
-	buildingCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
-	buildingCollider->SetCollisionProfileName({ "ConstructionBuilding" });
-
-
 
 }
 

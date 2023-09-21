@@ -17,6 +17,14 @@ enum class EGameModeStage : uint8
 };
 
 
+UENUM(BlueprintType)
+enum class EGameStatus : uint8
+{
+	PLAYING UMETA(DisplayName = "Playing"),
+	VICOTRY UMETA(DisplayName = "Victory"),
+	DEFEAT UMETA(DisplayName = "Defeat")
+};
+
 /**
  * 
  */

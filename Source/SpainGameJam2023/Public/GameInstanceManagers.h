@@ -7,6 +7,9 @@
 #include "Utils/GameTypes.h"
 #include "GameInstanceManagers.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameEndSignature);
+
 /**
  *
  */
@@ -34,16 +37,23 @@ public:
 
 
 	UFUNCTION(BlueprintCallable)
+	void SetGamePlayManager(class AGameplayManager* manager) { if (!gameplayManager) gameplayManager = manager; }
+
+	UFUNCTION(BlueprintCallable)
+	class AGameplayManager* GetGameplaymanager()const { return gameplayManager; }
+
+	UFUNCTION(BlueprintCallable)
 	void ChangeGameStage(EGameModeStage newStage);
 
 	UFUNCTION(BlueprintCallable)
 	EGameModeStage GetCurrentStage()const { return stage; }
 
+	void Defeat();
+
 protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
 	class UEnergyManager* energyManager;
-
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
 	class AHUDManager* hudManager;
@@ -51,8 +61,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
 	class UTurretsManager* turretsManager;
 
+	UPROPERTY(BlueprintReadonly, Visibleanywhere, Category = "Managers")
+	class AGameplayManager* gameplayManager;
+
 	UPROPERTY(BlueprintReadOnly)
 	EGameModeStage stage;
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnGameEndSignature OnGameOver;
 
+	UPROPERTY(BlueprintAssignable)
+	FOnGameEndSignature OnVictory;
 };

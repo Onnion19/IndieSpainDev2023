@@ -34,7 +34,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	UFUNCTION(BlueprintCallable)
-	void PickBuildingObject(TSubclassOf<class ABaseTurret> object);
+	void PickBuildingObject(TSubclassOf<class APlaceableBaseActor> object);
 
 
 	UFUNCTION(BlueprintCallable)
@@ -42,10 +42,10 @@ public:
 
 protected: 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category ="Building")
-	TMap<TSubclassOf<class ABaseTurret>, TSubclassOf<class ABaseBuildingActor>> buildingModels;
+	TMap<TSubclassOf<class APlaceableBaseActor>, TSubclassOf<class ABaseBuildingActor>> buildingModels;
 
 	UPROPERTY(VisibleAnywhere, Category ="Building")
-	TSubclassOf<ABaseTurret> selectedTurret;
+	TSubclassOf<class APlaceableBaseActor> selectedActor;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category ="Building")
 	class ABaseBuildingActor* currentObject;

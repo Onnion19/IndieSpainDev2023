@@ -5,6 +5,7 @@
 #include "Energy/EnergyManager.h"
 #include "HUD/HUDManager.h"
 #include "TurretsManager.h"
+#include "Actors/GameplayManager.h"
 
 void UGameInstanceManagers::CreateEnergyManager()
 {
@@ -39,4 +40,12 @@ void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
 	energyManager->OnChangeGameStage(stage);
 	turretsManager->OnChangeGameStage(stage);
 	hudManager->ChangeStage(stage);
+	if (gameplayManager)
+		gameplayManager->OnChangeGameStage(stage);
+}
+
+void UGameInstanceManagers::Defeat()
+{
+	OnGameOver.Broadcast();
+	ChangeGameStage(EGameModeStage::PREPARATIONS);
 }

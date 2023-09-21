@@ -80,6 +80,7 @@ protected:
 	UPROPERTY()
 	FTimerHandle delayHandle;
 
+public:
 	UPROPERTY(BlueprintAssignable)
 	FEnemiesSpawnSignature OnEnemySpawn;
 

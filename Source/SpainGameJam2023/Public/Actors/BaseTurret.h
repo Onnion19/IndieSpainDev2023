@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "Interfaces/ICombatInterface.h"
+#include "PlaceableBaseActor.h"
 #include "BaseTurret.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReceiveDamageSignature, float, damage);
@@ -20,7 +21,7 @@ enum class ETurretMode : uint8 {
 };
 
 UCLASS()
-class SPAINGAMEJAM2023_API ABaseTurret : public AActor, public ICombatInterface
+class SPAINGAMEJAM2023_API ABaseTurret : public APlaceableBaseActor, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -112,9 +113,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Visibility")
 	TArray<AActor*> closestActors;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Building")
-	class UBoxComponent* buildingCollider;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Turret Stats")
 	ETurretMode turretMode;

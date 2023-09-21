@@ -31,6 +31,9 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnWaveEndBP();
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnGameModeChangeBP(EGameModeStage stage);
+
 public:
 
 	UFUNCTION(BlueprintCallable)
@@ -50,14 +53,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopWave();
 
-
 	UFUNCTION(BlueprintCallable)
 	void PlayerStructureCreated(AActor* structure);
 
 	UFUNCTION(BlueprintCallable)
 	void PlayerStructureDestroyed(AActor* structure);
 
-private: 
+private:
 
 	void Defeat();
 
@@ -73,6 +75,10 @@ private:
 	void CheckWaveStatus();
 
 	void BindEventsWithSpawer();
+
+	void EnablePlayerStructures();
+
+	void DisablePlayerStructures();
 
 protected:
 
@@ -98,7 +104,7 @@ protected:
 	UPROPERTY()
 	FTimerHandle waveStatusHandle;
 
-public: 
+public:
 	UPROPERTY(BlueprintAssignable)
 	FOnWaveEndSignature OnWaveEnd;
 

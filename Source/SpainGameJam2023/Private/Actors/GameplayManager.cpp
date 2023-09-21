@@ -6,6 +6,7 @@
 #include "GameInstanceManagers.h"
 #include "Utils/EnemyDataAsset.h"
 #include "Actors/BaseEnemy.h"
+#include "Actors/BaseTurret.h"
 
 // Sets default values
 AGameplayManager::AGameplayManager()
@@ -34,7 +35,17 @@ EGameStatus AGameplayManager::GetGamestatus()
 
 void AGameplayManager::OnChangeGameStage(EGameModeStage stage)
 {
-	StopWave();
+	if (stage == EGameModeStage::PREPARATIONS)
+	{
+		StopWave();
+		DisablePlayerStructures();
+	}
+	else if (stage == EGameModeStage::COMBAT)
+	{
+		EnablePlayerStructures();
+	}
+
+	OnGameModeChangeBP(stage);
 }
 
 void AGameplayManager::SpawnWave(int32 wave)
@@ -133,4 +144,34 @@ void AGameplayManager::BindEventsWithSpawer()
 {
 	spawner->OnFinishWaveSpawn.AddDynamic(this, &AGameplayManager::OnSpawnFinish);
 	spawner->OnEnemySpawn.AddDynamic(this, &AGameplayManager::OnNewEnemySpawn);
+}
+
+void AGameplayManager::EnablePlayerStructures()
+{
+
+	for (AActor* structure : playerStructures)
+	{
+		ABaseTurret* turret = Cast<ABaseTurret>(structure);
+		if (turret)
+		{
+			turret->ActivateTurret();
+			turret->SwapToMode(ETurretMode::FIRING);
+			continue;
+		}
+	}
+
+}
+
+void AGameplayManager::DisablePlayerStructures()
+{
+	for (AActor* structure : playerStructures)
+	{
+		ABaseTurret* turret = Cast<ABaseTurret>(structure);
+		if (turret)
+		{
+			turret->DeactivateTurret();
+			turret->SwapToMode(ETurretMode::IDLE);
+			continue;
+		}
+	}
 }

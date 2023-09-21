@@ -15,9 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorRangeSignature, AActor*, act
 UENUM(BlueprintType)
 enum class ETurretMode : uint8 {
 	IDLE UMETA(DisplayName = "Idle"),
-	FIRING UMETA(Displayname = "Firing"),
-	PROCESSING UMETA(DisplayName = "Processing"),
-	RELOADING UMETA(DisplayName = "Reloading")
+	FIRING UMETA(Displayname = "Firing")
 };
 
 UCLASS()

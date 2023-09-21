@@ -115,7 +115,7 @@ void ABuildingPawn::PlaceCurrentActor() {
 	FActorSpawnParameters params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	auto newTurret = GetWorld()->SpawnActor<ABaseTurret>(selectedActor, currentObject->GetActorTransform(), params);
+	auto newTurret = GetWorld()->SpawnActor<APlaceableBaseActor>(selectedActor, currentObject->GetActorTransform(), params);
 	ensureMsgf(newTurret, TEXT("Trying to spawn an invaldi turret"));
 
 	auto gInstance = Cast<UGameInstanceManagers>(GetWorld()->GetGameInstance());
@@ -132,8 +132,6 @@ void ABuildingPawn::PlaceCurrentActor() {
 		return;
 	}
 
-	// [TODO] Probably this turrets manager can be removed
-	turretsManager->AddTurret(newTurret);
 	auto gampleyManager = gInstance->GetGameplaymanager();
 	if (!gampleyManager) return;
 	gampleyManager->PlayerStructureCreated(newTurret);

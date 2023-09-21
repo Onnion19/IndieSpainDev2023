@@ -35,6 +35,7 @@ void AEnemySpawner::SpawnNewWave(UEnemyDataAsset* data)
 	if (data->waveData.IsEmpty()) return;
 
 	ResetInternalData();
+	OnStartSpawn();
 	SpawnSubwave();
 }
 
@@ -70,7 +71,7 @@ void AEnemySpawner::SpawnSubwave()
 {
 	currentSubWave = &currentWave->waveData[subwave_currentSubwave];
 
-	for (const auto& [_, prob]: currentSubWave->enemies)
+	for (const auto& [_, prob] : currentSubWave->enemies)
 	{
 		subwave_AccumulatedProbability += prob;
 	}
@@ -82,6 +83,8 @@ void AEnemySpawner::FinishSpawn()
 	StopTimer(spawnHandle);
 	StopTimer(delayHandle);
 	currentSubWave = nullptr;
+
+	OnFinishSpawn();
 	OnFinishWaveSpawn.Broadcast();
 
 }
@@ -103,7 +106,7 @@ void AEnemySpawner::OnSpawnTimer()
 
 	for (const auto& [enemy, prob] : currentSubWave->enemies)
 	{
-		random -= prob; 
+		random -= prob;
 		if (random > 0)continue;
 
 		SpawnEnemy(enemy);
@@ -140,15 +143,15 @@ void AEnemySpawner::StartDelayTimer()
 void AEnemySpawner::SpawnEnemy(TSubclassOf<class ABaseEnemy> enemy)
 {
 	auto world = GetWorld();
-	if (!world)return; 
+	if (!world)return;
 
 	auto angle = FMath::RandRange(0.f, 360.f);
 	auto distance = FMath::RandRange(0.f, range);
-	
-	
-	FVector location = GetActorLocation() + (FVector{ FMath::Cos(angle), FMath::Sin(angle) , 0} * distance);
-	
-	FActorSpawnParameters params; 
+
+
+	FVector location = GetActorLocation() + (FVector{ FMath::Cos(angle), FMath::Sin(angle) , 0 } *distance);
+
+	FActorSpawnParameters params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
 	FTransform transform{ FRotator{}, location, FVector {1.f} };

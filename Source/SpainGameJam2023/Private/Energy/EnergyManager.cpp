@@ -32,10 +32,13 @@ bool UEnergyManager::HasEnoughEnergy(float ammount)const {
 
 void UEnergyManager::ConsumeEnergy(float ammount) {
 	accumulatedEnergy = std::max(0.f, accumulatedEnergy - ammount);
+
+	OnEnergyChange.Broadcast(accumulatedEnergy, maxAccumulatedEnergy, generationRate);
 }
 
 void UEnergyManager::GenerateEnergy() {
 	accumulatedEnergy = std::min(maxAccumulatedEnergy, accumulatedEnergy + generationRate);
+	OnEnergyChange.Broadcast(accumulatedEnergy, maxAccumulatedEnergy, generationRate);
 }
 
 void UEnergyManager::StartGenerationRate() {
@@ -74,8 +77,10 @@ float UEnergyManager::GetMaxEnergy()const {
 
 void UEnergyManager::DeltaMaxEnergy(float deltaAmmount) {
 	maxAccumulatedEnergy += deltaAmmount;
+	OnEnergyChange.Broadcast(accumulatedEnergy, maxAccumulatedEnergy, generationRate);
 }
 
 void UEnergyManager::SetMaxEnergy(float newAmmount) {
 	maxAccumulatedEnergy = newAmmount;
+	OnEnergyChange.Broadcast(accumulatedEnergy, maxAccumulatedEnergy, generationRate);
 }

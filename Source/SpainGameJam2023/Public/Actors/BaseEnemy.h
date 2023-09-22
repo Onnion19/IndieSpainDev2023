@@ -33,6 +33,8 @@ protected:
 	void OnHitCombatBP(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnDestroyBP();
 
 
 public:
@@ -54,6 +56,8 @@ public:
 	void GetCombatStats_Implementation(FCombatStats& out) const override;
 	void SetCombatStats_Implementation(const FCombatStats& stats) override;
 	// ~ICombatInterface
+
+	void DestroyEnemy();
 
 protected:
 

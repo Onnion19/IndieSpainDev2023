@@ -59,22 +59,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlayerStructureDestroyed(AActor* structure);
 
+	UFUNCTION(BlueprintCallable)
+	void OnNewEnemySpawn(class ABaseEnemy* enemy);
+
+	UFUNCTION(BlueprintCallable)
+	void EnemyDestroyed(class ABaseEnemy* enemy);
+
 private:
 
 	void Defeat();
-
-	UFUNCTION()
-	void OnNewEnemySpawn(class ABaseEnemy* enemy);
-
-	UFUNCTION()
-	void OnSpawnFinish();
-
-	void StartWaveStatusTimer();
-
-	UFUNCTION()
-	void CheckWaveStatus();
-
-	void BindEventsWithSpawer();
 
 	void EnablePlayerStructures();
 
@@ -100,9 +93,6 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Wave")
 	TArray<class ABaseEnemy*> spawnedEnemies;
-
-	UPROPERTY()
-	FTimerHandle waveStatusHandle;
 
 public:
 	UPROPERTY(BlueprintAssignable)

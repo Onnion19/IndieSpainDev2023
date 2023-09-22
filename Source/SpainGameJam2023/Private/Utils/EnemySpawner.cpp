@@ -31,17 +31,18 @@ void AEnemySpawner::Tick(float DeltaTime)
 void AEnemySpawner::SpawnNewWave(UEnemyDataAsset* data)
 {
 	currentWave = data;
-	OnStartWaveSpawn.Broadcast();
+
 	if (data->waveData.IsEmpty()) return;
 
 	ResetInternalData();
 	OnStartSpawn();
+	OnStartWaveSpawn.Broadcast();
 	SpawnSubwave();
 }
 
 bool AEnemySpawner::IsSpawning() const
 {
-	return currentWave && currentSubWave;
+	return currentWave != nullptr && currentSubWave != nullptr;
 }
 
 void AEnemySpawner::ResetInternalData()
@@ -58,7 +59,8 @@ void AEnemySpawner::ResetInternalData()
 
 void AEnemySpawner::NextSubWave()
 {
-	if (++subwave_currentSubwave >= currentWave->waveData.Num())
+	subwave_currentSubwave++;
+	if (subwave_currentSubwave >= currentWave->waveData.Num())
 	{
 		FinishSpawn();
 		return;
@@ -70,7 +72,7 @@ void AEnemySpawner::NextSubWave()
 void AEnemySpawner::SpawnSubwave()
 {
 	currentSubWave = &currentWave->waveData[subwave_currentSubwave];
-
+	subwave_SpawnedEnemies = 0;
 	for (const auto& [_, prob] : currentSubWave->enemies)
 	{
 		subwave_AccumulatedProbability += prob;
@@ -111,10 +113,10 @@ void AEnemySpawner::OnSpawnTimer()
 
 		SpawnEnemy(enemy);
 		break;
-
 	}
+	subwave_SpawnedEnemies++;
 
-	if (++subwave_SpawnedEnemies >= currentSubWave->numEnemies)
+	if (subwave_SpawnedEnemies >= currentSubWave->numEnemies)
 	{
 		StopTimer(spawnHandle);
 		NextSubWave();

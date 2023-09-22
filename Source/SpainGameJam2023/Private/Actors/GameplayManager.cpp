@@ -25,7 +25,6 @@ void AGameplayManager::BeginPlay()
 	gameInstance->SetGamePlayManager(this);
 
 	ensureMsgf(spawner, TEXT("Gameplay maanger spawner reference is missing"));
-	BindEventsWithSpawer();
 }
 
 EGameStatus AGameplayManager::GetGamestatus()
@@ -114,36 +113,28 @@ void AGameplayManager::Defeat()
 
 void AGameplayManager::OnNewEnemySpawn(ABaseEnemy* enemy)
 {
-	spawnedEnemies.Add(enemy);
+	spawnedEnemies.AddUnique(enemy);
 }
 
-void AGameplayManager::OnSpawnFinish()
+void AGameplayManager::EnemyDestroyed(ABaseEnemy* enemy)
 {
-	StartWaveStatusTimer();
-}
+	if (spawnedEnemies.Remove(enemy) == 0) return;
 
-void AGameplayManager::StartWaveStatusTimer()
-{
-	GetWorldTimerManager().SetTimer(waveStatusHandle, this, &AGameplayManager::CheckWaveStatus, 1.f, true, 1.f);
-}
-
-void AGameplayManager::CheckWaveStatus()
-{
-	if (spawnedEnemies.IsEmpty())
+	if (spawnedEnemies.IsEmpty() && !spawner->IsSpawning())
 	{
-		GetWorldTimerManager().ClearTimer(waveStatusHandle);
 		if (gameStatus == EGameStatus::PLAYING)
 		{
 			OnWaveEndBP();
 			OnWaveEnd.Broadcast();
+
+			auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance());
+			if (gInstance)
+			{
+				gInstance->ChangeGameStage(EGameModeStage::PREPARATIONS);
+			}
 		}
 	}
-}
 
-void AGameplayManager::BindEventsWithSpawer()
-{
-	spawner->OnFinishWaveSpawn.AddDynamic(this, &AGameplayManager::OnSpawnFinish);
-	spawner->OnEnemySpawn.AddDynamic(this, &AGameplayManager::OnNewEnemySpawn);
 }
 
 void AGameplayManager::EnablePlayerStructures()

@@ -7,6 +7,9 @@
 #include "BaseManager.h"
 #include "EnergyManager.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FEnergyChangeSignature, float, currentEnergy, float, maxEnergy, float, regeneration);
+
 /**
  *
  */
@@ -72,4 +75,9 @@ protected:
 
 	UPROPERTY()
 	FTimerHandle generationHandle;
+
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FEnergyChangeSignature OnEnergyChange;
 };

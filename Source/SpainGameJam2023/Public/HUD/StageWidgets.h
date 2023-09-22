@@ -22,8 +22,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeActivate();
 
+protected:
+	UFUNCTION(BlueprintImplementableEvent)
+	void ActivateBP();
 
-protected: 
+	UFUNCTION(BlueprintImplementableEvent)
+	void DeActivateBP();
+protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TArray<class UBaseUserWidget*> widgets;

@@ -36,6 +36,8 @@ void UGameInstanceManagers::Init()
 
 void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
 {
+	if (newStage == stage) return; 
+
 	stage = newStage;
 	energyManager->OnChangeGameStage(stage);
 	turretsManager->OnChangeGameStage(stage);

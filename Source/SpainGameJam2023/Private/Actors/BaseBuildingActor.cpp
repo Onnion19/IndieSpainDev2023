@@ -33,7 +33,8 @@ void ABaseBuildingActor::BeginPlay()
 	materialInstance = UMaterialInstanceDynamic::Create(material, this);
 	materialInstance->SetVectorParameterValue(materialColorVariable, FColor::Green);
 
-	auto components = GetComponentsByClass(UStaticMeshComponent::StaticClass());
+	TArray<UStaticMeshComponent*> components{};
+	GetComponents(components);
 
 	std::for_each(components.begin(), components.end(), [&](UActorComponent* component) {
 		auto mesh = Cast<UStaticMeshComponent>(component);

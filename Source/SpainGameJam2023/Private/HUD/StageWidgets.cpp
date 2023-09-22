@@ -17,6 +17,8 @@ void UStageWidgets::Activate()
 			baseWidget->OnActivate();
 		}
 		});
+
+	ActivateBP();
 }
 
 void UStageWidgets::DeActivate()
@@ -32,4 +34,6 @@ void UStageWidgets::DeActivate()
 			baseWidget->OnDeactivate();
 		}
 	});
+
+	DeActivateBP();
 }

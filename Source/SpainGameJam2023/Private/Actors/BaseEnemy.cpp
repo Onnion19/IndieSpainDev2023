@@ -4,6 +4,8 @@
 #include "Actors/BaseEnemy.h"
 #include "Components/SphereComponent.h"
 #include "Utils/CombatUtilsLibrary.h"
+#include "GameInstanceManagers.h"
+#include "Actors/GameplayManager.h"
 // Sets default values
 ABaseEnemy::ABaseEnemy()
 {
@@ -29,6 +31,16 @@ void ABaseEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (!GetWorld())return;
+	auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance());
+	if (gInstance)
+	{
+		if (auto manager = gInstance->GetGameplaymanager())
+		{
+			manager->OnNewEnemySpawn(this);
+		}
+	}
+
 }
 
 void ABaseEnemy::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -41,7 +53,7 @@ void ABaseEnemy::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		OnHitCombatBP(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	}
 
-	Destroy();
+	DestroyEnemy();
 }
 
 void ABaseEnemy::OnHitCombat(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
@@ -61,6 +73,23 @@ void ABaseEnemy::Activate()
 	ActivateBP();
 }
 
+void ABaseEnemy::DestroyEnemy()
+{
+	if (!GetWorld())return;
+	auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance());
+	if (gInstance)
+	{
+		if (auto manager = gInstance->GetGameplaymanager())
+		{
+			manager->EnemyDestroyed(this);
+		}
+	}
+
+	OnDestroyBP();
+
+	Destroy();
+}
+
 void ABaseEnemy::DealDamage_Implementation(float ammount) const
 {
 	UE_LOG(LogTemp, Log, TEXT("Enemy %s, deal damage %d"), *(GetName()), ammount);
@@ -69,6 +98,10 @@ void ABaseEnemy::DealDamage_Implementation(float ammount) const
 void ABaseEnemy::ReceiveDamage_Implementation(float ammount)
 {
 	UE_LOG(LogTemp, Log, TEXT("Enemy %s, received damage %d"), *(GetName()), ammount);
+
+	combatStats.health -= ammount;
+	if (combatStats.health <= 0)
+		DestroyEnemy();
 }
 
 void ABaseEnemy::GetCombatStats_Implementation(FCombatStats& out) const

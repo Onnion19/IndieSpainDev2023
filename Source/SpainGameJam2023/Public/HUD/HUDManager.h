@@ -5,7 +5,21 @@
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
 #include "AllAgainstTheStarsGameMde.h"
+#include <functional>
 #include "HUDManager.generated.h"
+
+
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorSelectedSignature, AActor*, selectedActor);
+
+
+USTRUCT(BlueprintType)
+struct FStageWidgetsArray {
+	GENERATED_BODY()
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TArray<class UStageWidgets*> widgets;
+};
 
 /**
  *
@@ -17,15 +31,41 @@ class SPAINGAMEJAM2023_API AHUDManager : public AHUD
 
 public:
 
+	UFUNCTION(BlueprintCallable)
+	void ActorSelected(AActor* actor);
+
+	void ChangeStage(EGameModeStage stage);
 
 	UFUNCTION(BlueprintCallable)
-	void ChangeStage(EGameModeStage stage);
+	void RegisterStageWidget(EGameModeStage stage, class UStageWidgets* widget);
+
+	UFUNCTION(BlueprintCallable)
+	void UnRegisterStageWidget(EGameModeStage stage, class UStageWidgets* widget);
+
+
+private: 
+
+	void ActivateStageWidgets(EGameModeStage stage);
+	void DeactivateStageWidgets(EGameModeStage stage);
+
 
 protected:
 
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	TMap<EGameModeStage, class UStageWidgets*> stageWidgets;
+	void BeginPlay()override;
 
-	UPROPERTY(VisibleAnywhere)
-	class UStageWidgets* currentActiveStageWidget;
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	TMap<EGameModeStage, FStageWidgetsArray> stageWidgets;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	TSubclassOf<class UBaseUserWidget> rootClass;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	class UBaseUserWidget* root;
+
+	EGameModeStage currentStage;
+
+public: 
+
+	UPROPERTY(BlueprintAssignable)
+	FOnActorSelectedSignature OnActorSelected;
 };

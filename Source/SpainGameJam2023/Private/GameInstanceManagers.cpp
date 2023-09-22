@@ -42,8 +42,9 @@ void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
 	energyManager->OnChangeGameStage(stage);
 	turretsManager->OnChangeGameStage(stage);
 	hudManager->ChangeStage(stage);
-	if (gameplayManager)
+	if (gameplayManager) {
 		gameplayManager->OnChangeGameStage(stage);
+	}
 }
 
 void UGameInstanceManagers::Defeat()

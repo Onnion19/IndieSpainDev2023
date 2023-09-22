@@ -9,7 +9,6 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameEndSignature);
-
 /**
  *
  */

@@ -4,6 +4,7 @@
 #include "Components/EnergyPipeBuilder.h"
 #include "Actors/BaseEnergyPipe.h"
 #include "Components/BuildingEnergyNode.h"
+#include "Actors/BaseEnergyStation.h"
 #include <limits>
 
 // Sets default values for this component's properties
@@ -45,6 +46,7 @@ std::tuple<class UBuildingEnergyNode*, class UBuildingEnergyNode*> UEnergyPipeBu
 
 	for (auto& cn : connectedNodes)
 	{
+
 		auto [node, distance] = FindClosestNodeFrom(cn, nodesToConnect);
 
 		if (distance < bestDistance)

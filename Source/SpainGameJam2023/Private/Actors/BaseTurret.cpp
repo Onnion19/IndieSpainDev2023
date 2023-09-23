@@ -71,7 +71,13 @@ void ABaseTurret::DealDamage_Implementation(float ammount) const {
 }
 
 void ABaseTurret::ReceiveDamage_Implementation(float ammount) {
+	combatStats.health -= ammount;
 	onReceiveDamage.Broadcast(ammount);
+
+	if (combatStats.health <= 0)
+	{
+		Destroy();
+	}
 }
 
 void ABaseTurret::GetCombatStats_Implementation(FCombatStats& out) const {
@@ -124,7 +130,7 @@ void ABaseTurret::SwapToMode(ETurretMode newMode)
 
 void ABaseTurret::StartFiringMode() {
 	ensureMsgf(combatStats.attackSpeed > 0.1f, TEXT("Can't start turret firing sequence: Fire rate to high: %d"), combatStats.attackSpeed);
-	const float attackPerSecond = combatStats.attackSpeed * energyNodeComponent->GetNodeEnergy() / (combatStats.requiredEnergy + 0.0000001f);
+	const float attackPerSecond = combatStats.attackSpeed * energyNodeComponent->GetNodeEnergy() / (combatStats.requiredEnergy + 0.01f);
 	if (attackPerSecond < 0.01f) return;
 	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFire, 1 / attackPerSecond, true);
 }
@@ -144,7 +150,10 @@ ETurretMode ABaseTurret::GetTurretMode()const
 void ABaseTurret::UpdateAttackRangeMesh(float arange) {
 
 	const auto radius = static_cast<float>(turretRangeIndicator->GetStaticMesh()->GetBounds().SphereRadius);
-	turretRangeIndicator->SetWorldScale3D(FVector{ arange, arange, arange } / radius);
+	FVector Scale3D{ arange, arange, arange };
+	Scale3D /= 2*radius;
+
+	turretRangeIndicator->SetWorldScale3D(Scale3D);
 	turretRangeCollider->SetSphereRadius(arange / 2);
 	turretRangeCollider->SetRelativeLocation(FVector{ 0,0, (arange / 2) + rangeAreaOffset });
 

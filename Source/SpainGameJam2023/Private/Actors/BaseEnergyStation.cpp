@@ -32,9 +32,10 @@ void ABaseEnergyStation::BeginPlay()
 	const float threshold = range * range;
 	for (auto& actor : FoundActors)
 	{
-		if (actor == this) continue;
+		if (Cast< ABaseEnergyStation>(actor)) continue;
 		auto node = actor->GetComponentByClass<UBuildingEnergyNode>();
-		if (!node)continue;
+		if (!node)continue; // No energy component to connect
+		if (node->GetInPipe() != nullptr)continue; // Is already connected
 
 		auto distance = static_cast<float>(FVector::DistSquared(GetActorLocation(), actor->GetActorLocation()));
 		if (distance < threshold)
@@ -43,8 +44,8 @@ void ABaseEnergyStation::BeginPlay()
 		}
 	}
 
-	RebuildPipeGraph();
 	init = true;
+	RebuildPipeGraph();
 }
 
 void ABaseEnergyStation::RebuildPipeGraph()
@@ -60,7 +61,9 @@ float ABaseEnergyStation::GetRange() const
 
 void ABaseEnergyStation::Connect(UBuildingEnergyNode* node)
 {
+	if (!node)return;
 	if (!init)return;
+	if (Cast< ABaseEnergyStation>(node->GetOwner())) return;
 	connectedComponents.AddUnique(node);
 }
 

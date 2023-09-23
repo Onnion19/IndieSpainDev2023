@@ -60,6 +60,9 @@ public:
 	void PlayerStructureDestroyed(AActor* structure);
 
 	UFUNCTION(BlueprintCallable)
+	void GetPlayerStructures(TArray<AActor*>& structures)const;
+
+	UFUNCTION(BlueprintCallable)
 	void OnNewEnemySpawn(class ABaseEnemy* enemy);
 
 	UFUNCTION(BlueprintCallable)

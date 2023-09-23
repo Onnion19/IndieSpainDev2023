@@ -97,6 +97,11 @@ void AGameplayManager::PlayerStructureDestroyed(AActor* structure)
 	}
 }
 
+void AGameplayManager::GetPlayerStructures(TArray<AActor*>& structures) const
+{
+	structures = playerStructures;
+}
+
 void AGameplayManager::Defeat()
 {
 	if (gameStatus == EGameStatus::PLAYING)

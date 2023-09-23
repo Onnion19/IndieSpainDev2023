@@ -15,8 +15,9 @@ class SPAINGAMEJAM2023_API UBaseUserWidget : public UUserWidget
 	GENERATED_BODY()
 
 public:
-
+	UFUNCTION(BlueprintCallable)
 	void OnActivate();
+	UFUNCTION(BlueprintCallable)
 	void OnDeactivate();
 
 protected: 

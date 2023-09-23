@@ -82,7 +82,9 @@ void ABuildingPawn::PossessedBy(AController* NewController)
 
 void ABuildingPawn::UnPossessed()
 {
-
+	if (currentObject) {
+		currentObject->Destroy();
+	}
 }
 
 

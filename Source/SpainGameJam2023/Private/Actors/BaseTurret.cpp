@@ -49,8 +49,15 @@ void ABaseTurret::BeginDestroy() {
 // Called every frame
 void ABaseTurret::Tick(float DeltaTime)
 {
-	ensureMsgf(bIsActive, TEXT("Turret tick called while turret is deactivated"));
+	if (bIsShowingRangeIndicator)
+	{
+		turretRangeIndicator->AddRelativeRotation(rangeIndicatorRotation);
+	}
+	if (!bIsActive) return;
+
 	Super::Tick(DeltaTime);
+
+	TickBP(DeltaTime);
 }
 
 
@@ -99,6 +106,7 @@ void ABaseTurret::SwapToMode(ETurretMode newMode)
 	turretMode = newMode;
 	if (turretMode == ETurretMode::FIRING)
 	{
+		HideAttackRangeIndicator();
 		StartFiringMode();
 		if (bIsActive)
 			SetActorTickEnabled(true);
@@ -169,7 +177,11 @@ void ABaseTurret::DeactivateTurret() {
 
 void ABaseTurret::ShowAttackRangeIndicator() {
 	turretRangeIndicator->SetVisibility(true, true);
+	bIsShowingRangeIndicator = true;
+	SetActorTickEnabled(true);
 }
 void ABaseTurret::HideAttackRangeIndicator() {
 	turretRangeIndicator->SetVisibility(false, true);
+	bIsShowingRangeIndicator = false;
+	SetActorTickEnabled(false);
 }

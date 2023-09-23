@@ -59,6 +59,9 @@ protected:
 
 	UFUNCTION()
 	void OnFire();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void TickBP(float deltaTime);
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -117,6 +120,11 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buidling")
 	float rangeAreaOffset = 50.f;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FRotator rangeIndicatorRotation;
+
+	bool bIsShowingRangeIndicator = false;
 
 	// Timers
 	UPROPERTY()

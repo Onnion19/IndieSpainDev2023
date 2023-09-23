@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "Actors/PlaceableBaseActor.h"
 #include "BaseEnergyStation.generated.h"
 
 UCLASS()
-class SPAINGAMEJAM2023_API ABaseEnergyStation : public AActor
+class SPAINGAMEJAM2023_API ABaseEnergyStation : public APlaceableBaseActor
 {
 	GENERATED_BODY()
 
@@ -21,15 +21,24 @@ protected:
 
 public:
 
+	float GetRange()const;
 
 	UFUNCTION(BlueprintCallable)
 	void RebuildPipeGraph();
+
 
 	UFUNCTION(BlueprintCallable)
 	void Connect(class UBuildingEnergyNode* node);
 
 	UFUNCTION(BlueprintCallable)
 	void Disconnect(class UBuildingEnergyNode* node);
+protected: 
+
+	void RegisterToManager();
+	
+	void UnregisterToManager();
+
+	void BeginDestroy()override;
 
 protected:
 
@@ -48,6 +57,6 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<class UBuildingEnergyNode*> connectedComponents;
 
-
+	bool init = false;
 
 };

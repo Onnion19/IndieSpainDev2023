@@ -53,6 +53,7 @@ FCombatStats UCombatUtilsLibrary::Multiply(const FCombatStats& stats, float mult
 		stats.attackSpeed * multiplier,
 		stats.defense * multiplier,
 		stats.piercingDamagePercent * multiplier,
+		stats.requiredEnergy,
 		stats.team
 	};
 }
@@ -65,6 +66,7 @@ FCombatStats UCombatUtilsLibrary::Add(const FCombatStats& a, const FCombatStats&
 		a.attackSpeed + b.attackSpeed,
 		a.defense + b.defense,
 		a.piercingDamagePercent + b.piercingDamagePercent,
+		a.requiredEnergy,
 		a.team
 	};
 }
@@ -77,6 +79,7 @@ FCombatStats UCombatUtilsLibrary::Withdraw(const FCombatStats& a, const FCombatS
 		a.attackSpeed - b.attackSpeed,
 		a.defense - b.defense,
 		a.piercingDamagePercent - b.piercingDamagePercent,
+		a.requiredEnergy,
 		a.team
 	};
 }

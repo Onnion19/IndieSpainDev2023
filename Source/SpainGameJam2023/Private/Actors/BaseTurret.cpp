@@ -8,6 +8,7 @@
 #include "Utils/CombatUtilsLibrary.h"
 #include "GameInstanceManagers.h"
 #include "TurretsManager.h"
+#include "Components/BuildingEnergyNode.h"
 
 // Sets default values
 ABaseTurret::ABaseTurret()
@@ -29,6 +30,8 @@ ABaseTurret::ABaseTurret()
 	turretRangeIndicator->AttachToComponent(turretRangeCollider, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	turretRangeIndicator->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
+
+	energyNodeComponent = CreateDefaultSubobject<UBuildingEnergyNode>("Energy node");
 }
 
 // Called when the game starts or when spawned
@@ -121,7 +124,9 @@ void ABaseTurret::SwapToMode(ETurretMode newMode)
 
 void ABaseTurret::StartFiringMode() {
 	ensureMsgf(combatStats.attackSpeed > 0.1f, TEXT("Can't start turret firing sequence: Fire rate to high: %d"), combatStats.attackSpeed);
-	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFire, combatStats.attackSpeed, true);
+	const float attackPerSecond = combatStats.attackSpeed * energyNodeComponent->GetNodeEnergy() / (combatStats.requiredEnergy + 0.0000001f);
+	if (attackPerSecond < 0.01f) return;
+	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFire, 1 / attackPerSecond, true);
 }
 
 

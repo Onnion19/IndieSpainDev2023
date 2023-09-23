@@ -42,7 +42,7 @@ void ABuildingPawn::Tick(float DeltaTime)
 		FCollisionQueryParams params;
 		params.AddIgnoredActor(this);
 		// See where the mouse is pointint to place the new turret
-		if (GetWorld()->LineTraceSingleByChannel(hit, worldlLocation, worldlLocation + (worldDirection * 10000), ECollisionChannel::ECC_GameTraceChannel4, params))
+		if (GetWorld()->LineTraceSingleByChannel(hit, worldlLocation, worldlLocation + (worldDirection * 10000000), ECollisionChannel::ECC_GameTraceChannel4, params))
 		{
 			const auto& hitLocation = hit.Location;
 			currentObject->SetActorLocation(hitLocation);
@@ -50,7 +50,7 @@ void ABuildingPawn::Tick(float DeltaTime)
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), worldlLocation, worldlLocation + (worldDirection * 5000), FColor::Red, false, 1.f, 0u, 0.5f);
+			DrawDebugLine(GetWorld(), worldlLocation, worldlLocation + (worldDirection * 5000), FColor::Red, false, 10.f, 0u, 0.5f);
 		}
 
 

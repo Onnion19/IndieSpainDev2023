@@ -3,6 +3,10 @@
 
 #include "Components/BuildingEnergyNode.h"
 #include "Actors/BaseEnergyPipe.h"
+#include "GameInstanceManagers.h"
+#include "Energy/EnergyManager.h"
+#include "Actors/BaseEnergyStation.h"
+#include <limits>
 
 // Sets default values for this component's properties
 UBuildingEnergyNode::UBuildingEnergyNode()
@@ -22,6 +26,11 @@ UBuildingEnergyNode::UBuildingEnergyNode()
 void UBuildingEnergyNode::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (auto station = FindClosestStation())
+	{
+		ConnectToStation(station);
+	}
 }
 
 void UBuildingEnergyNode::NewOutPipe(ABaseEnergyPipe* pipe)
@@ -74,6 +83,42 @@ float UBuildingEnergyNode::GetEnergyConsumption() const
 float UBuildingEnergyNode::GetNodeEnergy() const
 {
 	return incomingEnergy - energyConsumption;
+}
+
+ABaseEnergyStation* UBuildingEnergyNode::FindClosestStation()
+{
+	auto gInstance = Cast<UGameInstanceManagers>(GetOwner()->GetGameInstance());
+	if (!gInstance) return nullptr;
+	auto manager = gInstance->GetEnergyManager();
+	if (!manager)return nullptr;
+	auto stations = manager->GetStationList();
+
+
+	const FVector location = GetOwner()->GetActorLocation();
+	float min = std::numeric_limits<float>::max();
+	ABaseEnergyStation* bestStation = nullptr;
+	for(auto station : stations)
+	{
+		const FVector stationLocation = station->GetActorLocation();
+		const auto range = station->GetRange() * station->GetRange();
+		const auto distance = FVector::DistSquared(location, stationLocation);
+		if (distance < range && distance < min)
+		{
+			min = distance;
+			bestStation = station;
+		}
+	}
+
+	return bestStation;
+	
+}
+
+void UBuildingEnergyNode::ConnectToStation(ABaseEnergyStation* station)
+{
+	if (!station)return;
+
+	station->Connect(this);
+	station->RebuildPipeGraph();
 }
 
 

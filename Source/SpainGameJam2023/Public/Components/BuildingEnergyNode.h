@@ -45,6 +45,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	float GetNodeEnergy()const;
 
+protected: 
+
+	class ABaseEnergyStation* FindClosestStation();
+
+	void ConnectToStation(class ABaseEnergyStation* station);
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)

@@ -124,6 +124,9 @@ protected:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FRotator rangeIndicatorRotation;
 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	class UBuildingEnergyNode* energyNodeComponent;
+
 	bool bIsShowingRangeIndicator = false;
 
 	// Timers

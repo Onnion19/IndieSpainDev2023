@@ -20,64 +20,16 @@ class SPAINGAMEJAM2023_API UEnergyManager : public UBaseManager
 public:
 
 	UFUNCTION(BlueprintCallable)
-	bool HasEnoughEnergy(float ammount)const;
+	void RegisterEnergyStation(class ABaseEnergyStation* station) { stationList.AddUnique(station); }
 
 	UFUNCTION(BlueprintCallable)
-	void ConsumeEnergy(float ammount);
-
-	UFUNCTION()
-	void GenerateEnergy();
+	void UnregisterEnergyStation(class ABaseEnergyStation* station) { stationList.Remove(station); }
 
 	UFUNCTION(BlueprintCallable)
-	void StartGenerationRate();
-
-	UFUNCTION(BlueprintCallable)
-	void StopGenerationRate();
-
-	UFUNCTION(BlueprintCallable)
-	void SetGenerationRate(float newGenerationRate, bool update);
-
-	UFUNCTION(BlueprintCallable)
-	float GetGenerationRate()const;
-
-	UFUNCTION(BlueprintCallable)
-	float GetAccumulatedEnergy()const;
-
-	UFUNCTION(BlueprintCallable)
-	float GetMaxEnergy()const;
-
-	UFUNCTION(BlueprintCallable)
-	void DeltaMaxEnergy(float deltaAmmount);
-
-	UFUNCTION(BlueprintCallable)
-	void SetMaxEnergy(float newAmmount);
-
-	UFUNCTION(BlueprintCallable)
-	void ResetToDefaults();
-
-	void OnChangeGameStage(EGameModeStage newStage) override;
+	TArray<class ABaseEnergyStation*> GetStationList()const { return stationList; }
 
 protected:
 
-	// Energy will be generate every <generationTime> (seconds) at a <generationRate> rate
 	UPROPERTY()
-	float generationTime = 0.5f;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	float generationRate = 0.5f;
-
-	// Generated energy will get accumulated over time:
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	float accumulatedEnergy = 0.f;
-
-	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
-	float maxAccumulatedEnergy = 10.f;
-
-	UPROPERTY()
-	FTimerHandle generationHandle;
-
-public:
-
-	UPROPERTY(BlueprintAssignable)
-	FEnergyChangeSignature OnEnergyChange;
+	TArray<class ABaseEnergyStation*> stationList;
 };

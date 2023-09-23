@@ -4,7 +4,10 @@
 #include "Actors/BaseEnergyStation.h"
 #include "Components/EnergyPipeBuilder.h"
 #include "Components/BuildingEnergyNode.h"
+#include "GameInstanceManagers.h"
+#include "Energy/EnergyManager.h"
 #include "Kismet/GameplayStatics.h"
+
 
 // Sets default values
 ABaseEnergyStation::ABaseEnergyStation()
@@ -21,6 +24,7 @@ ABaseEnergyStation::ABaseEnergyStation()
 void ABaseEnergyStation::BeginPlay()
 {
 	Super::BeginPlay();
+	RegisterToManager();
 	energyNode->SetEnergyIncome(energy);
 
 	TArray<AActor*> FoundActors;
@@ -40,20 +44,63 @@ void ABaseEnergyStation::BeginPlay()
 	}
 
 	RebuildPipeGraph();
+	init = true;
 }
 
 void ABaseEnergyStation::RebuildPipeGraph()
 {
+	if (!init)return;
 	energyBuilder->RebuildPipeGraphFromNode(energyNode, connectedComponents);
+}
+
+float ABaseEnergyStation::GetRange() const
+{
+	return range;
 }
 
 void ABaseEnergyStation::Connect(UBuildingEnergyNode* node)
 {
+	if (!init)return;
 	connectedComponents.AddUnique(node);
 }
 
 void ABaseEnergyStation::Disconnect(UBuildingEnergyNode* node)
 {
+	if (!init)return;
 	connectedComponents.Remove(node);
 }
+
+void ABaseEnergyStation::RegisterToManager()
+{
+	if(!GetWorld()) return;
+	auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance());
+	if (gInstance)
+	{
+		if (auto manager = gInstance->GetEnergyManager())
+		{
+			manager->RegisterEnergyStation(this);
+		}
+	}
+}
+
+void ABaseEnergyStation::UnregisterToManager()
+{
+	if (!GetWorld()) return;
+	auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance());
+	if (gInstance)
+	{
+		if (auto manager = gInstance->GetEnergyManager())
+		{
+			manager->UnregisterEnergyStation(this);
+		}
+	}
+
+}
+
+void ABaseEnergyStation::BeginDestroy()
+{
+	UnregisterToManager();
+	Super::BeginDestroy();
+}
+
 

@@ -31,6 +31,9 @@ struct FCombatStats {
 	float piercingDamagePercent = 0.05f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float requiredEnergy = 1.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ECombatTeam team;
 };
 

@@ -22,6 +22,9 @@ public:
 	AGameplayManager();
 
 protected:
+
+	void PostInitializeComponents() override;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -63,6 +66,23 @@ public:
 	void GetPlayerStructures(TArray<AActor*>& structures)const;
 
 	UFUNCTION(BlueprintCallable)
+	TArray<class ABaseBeaconActor*> GetPlayerBeacons()const;
+
+	template<typename T>
+	TArray<T*> GetPlayerStructuresByType()const
+	{
+		TArray<T*> actors{};
+		for (auto& actor : playerStructures)
+		{
+			if (auto type = Cast<T>(actor))
+			{
+				actors.Add(type);
+			}
+		}
+		return actors;
+	}
+
+	UFUNCTION(BlueprintCallable)
 	void OnNewEnemySpawn(class ABaseEnemy* enemy);
 
 	UFUNCTION(BlueprintCallable)
@@ -75,6 +95,8 @@ private:
 	void EnablePlayerStructures();
 
 	void DisablePlayerStructures();
+
+	void SearchSpawner();
 
 protected:
 

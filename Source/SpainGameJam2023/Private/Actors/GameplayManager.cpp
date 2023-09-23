@@ -7,6 +7,8 @@
 #include "Utils/EnemyDataAsset.h"
 #include "Actors/BaseEnemy.h"
 #include "Actors/BaseTurret.h"
+#include "Kismet/GameplayStatics.h"
+#include "Actors/BaseBeaconActor.h"
 
 // Sets default values
 AGameplayManager::AGameplayManager()
@@ -16,14 +18,22 @@ AGameplayManager::AGameplayManager()
 	gameStatus = EGameStatus::PLAYING;
 }
 
+void AGameplayManager::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance());
+	gameInstance->SetGamePlayManager(this);
+}
+
 // Called when the game starts or when spawned
 void AGameplayManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance());
-	gameInstance->SetGamePlayManager(this);
-
+	if (!spawner)
+	{
+		SearchSpawner();
+	}
 	ensureMsgf(spawner, TEXT("Gameplay maanger spawner reference is missing"));
 }
 
@@ -102,6 +112,11 @@ void AGameplayManager::GetPlayerStructures(TArray<AActor*>& structures) const
 	structures = playerStructures;
 }
 
+TArray<ABaseBeaconActor*> AGameplayManager::GetPlayerBeacons() const
+{
+	return GetPlayerStructuresByType<ABaseBeaconActor>();
+}
+
 void AGameplayManager::Defeat()
 {
 	if (gameStatus == EGameStatus::PLAYING)
@@ -170,4 +185,14 @@ void AGameplayManager::DisablePlayerStructures()
 			continue;
 		}
 	}
+}
+
+void AGameplayManager::SearchSpawner()
+{
+	spawner = Cast< AEnemySpawner>(UGameplayStatics::GetActorOfClass(GetWorld(), AEnemySpawner::StaticClass()));
+	if (!spawner)
+	{
+		UE_LOG(LogTemp, Error, TEXT("No spawner find in world"));
+	}
+
 }

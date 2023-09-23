@@ -12,6 +12,8 @@ float UCombatUtilsLibrary::ResolveCombatStats(const FCombatStats& dealer, const 
 
 	const float damageDealt = std::max(flatDamage - receiver.defense, 0.f) + piercingDamage;
 
+	UE_LOG(LogTemp, Log, TEXT("Solved combat: Flat damage = %f, Piercing Damage %f, Defense %f: Toal = %f"), flatDamage, piercingDamage, receiver.defense, damageDealt);
+
 	return damageDealt;
 }
 
@@ -34,7 +36,7 @@ void UCombatUtilsLibrary::ResolveCombatStatsByActors(AActor* dealer, AActor* rec
 	FCombatStats r_s{}; r->Execute_GetCombatStats(receiver, r_s);
 
 	const auto damage = ResolveCombatStats(d_s, r_s);
-	UE_LOG(LogTemp, Log, TEXT("%s Deals damage %d to %s"), *(dealer->GetName()) , damage, *(receiver->GetName()));
+	UE_LOG(LogTemp, Log, TEXT("%s Deals damage %f to %s"), *(dealer->GetName()) , damage, *(receiver->GetName()));
 	d->Execute_DealDamage(dealer, damage);
 	r->Execute_ReceiveDamage(receiver, damage);
 }

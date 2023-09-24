@@ -130,12 +130,11 @@ protected:
 	TArray<class ABaseEnemy*> spawnedEnemies;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Gold")
-	int32 gold = 0;
+	int32 gold = 5;
 
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnWaveEndSignature OnWaveEnd;
-
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStructureSignature OnPlayerStrucureCreated;

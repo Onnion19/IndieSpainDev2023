@@ -89,13 +89,14 @@ void ABaseEnergyStation::DealDamage_Implementation(float ammount) const
 {
 }
 
-void ABaseEnergyStation::ReceiveDamage_Implementation(float ammount)
+float ABaseEnergyStation::ReceiveDamage_Implementation(float ammount)
 {
 	combatStats.health -= ammount;
 	if (combatStats.health <= 0)
 	{
 		Destroy();
 	}
+	return combatStats.health;
 }
 
 void ABaseEnergyStation::GetCombatStats_Implementation(FCombatStats& out) const

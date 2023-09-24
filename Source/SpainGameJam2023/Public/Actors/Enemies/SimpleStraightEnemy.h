@@ -21,9 +21,6 @@ public:
 protected: 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FVector direction;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float speed = 10.f;
 
 };

@@ -45,6 +45,8 @@ void ABaseEnemy::BeginPlay()
 
 void ABaseEnemy::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
+	if (!OtherActor)return;
+
 	OnHitBP(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 
 	if (OtherActor->Implements<UCombatInterface>())
@@ -73,6 +75,16 @@ void ABaseEnemy::Activate()
 	ActivateBP();
 }
 
+int32 ABaseEnemy::GetGoldWorthy() const
+{
+	return goldWorthy;
+}
+
+void ABaseEnemy::SetGoldWorthy(int32 value)
+{
+	goldWorthy = value;
+}
+
 void ABaseEnemy::Destroyed()
 {
 	if (GetWorld())
@@ -95,13 +107,16 @@ void ABaseEnemy::DealDamage_Implementation(float ammount) const
 	UE_LOG(LogTemp, Log, TEXT("Enemy %s, deal damage %d"), *(GetName()), ammount);
 }
 
-void ABaseEnemy::ReceiveDamage_Implementation(float ammount)
+float ABaseEnemy::ReceiveDamage_Implementation(float ammount)
 {
 	UE_LOG(LogTemp, Log, TEXT("Enemy %s, received damage %d"), *(GetName()), ammount);
 
 	combatStats.health -= ammount;
+	const float h = combatStats.health;
 	if (combatStats.health <= 0)
 		DestroyEnemy();
+
+	return combatStats.health;
 }
 
 void ABaseEnemy::GetCombatStats_Implementation(FCombatStats& out) const

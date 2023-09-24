@@ -27,13 +27,14 @@ void ABaseBeaconActor::DealDamage_Implementation(float ammount) const
 
 }
 
-void ABaseBeaconActor::ReceiveDamage_Implementation(float ammount)
+float ABaseBeaconActor::ReceiveDamage_Implementation(float ammount)
 {
 	combatStats.health -= ammount;
 	if (combatStats.health <= 0)
 	{
 		Destroy();
 	}
+	return combatStats.health;
 }
 
 void ABaseBeaconActor::GetCombatStats_Implementation(FCombatStats& out) const

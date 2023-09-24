@@ -23,7 +23,7 @@ public:
 
 	// ICombatInterface 
 	void DealDamage_Implementation(float ammount) const override;
-	void ReceiveDamage_Implementation(float ammount) override;
+	float  ReceiveDamage_Implementation(float ammount) override;
 	void GetCombatStats_Implementation(FCombatStats& out) const override;
 	void SetCombatStats_Implementation(const FCombatStats& stats) override;
 	// ~ICombatInterface

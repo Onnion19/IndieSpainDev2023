@@ -21,6 +21,10 @@ ABuildingPawn::ABuildingPawn()
 void ABuildingPawn::BeginPlay()
 {
 	Super::BeginPlay();
+	if (auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance()))
+	{
+		gInstance->OnChangeGameStage.AddDynamic(this, &ABuildingPawn::OnGameStageChange);
+	}
 }
 
 // Called every frame
@@ -55,6 +59,11 @@ void ABuildingPawn::SpaceBarPressed_Implementation()
 	PlaceCurrentActor();
 }
 
+void ABuildingPawn::OnGameStageChange(EGameModeStage stage)
+{
+	SetIsBuidling(false);
+}
+
 
 
 
@@ -67,7 +76,7 @@ void ABuildingPawn::PickBuildingObject(TSubclassOf<APlaceableBaseActor> object) 
 		return;
 	}
 
-	selectedActor = object;
+	selectedActorClass = object;
 
 	if (currentObject) {
 		currentObject->Destroy();
@@ -80,13 +89,14 @@ void ABuildingPawn::PickBuildingObject(TSubclassOf<APlaceableBaseActor> object) 
 
 
 void ABuildingPawn::PlaceCurrentActor() {
+	if (!isBuilding)return;
 	if (!currentObject)return;
 	if (!currentObject->CanBePlaced())return;
 
 	FActorSpawnParameters params;
 	params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButAlwaysSpawn;
 
-	auto newTurret = GetWorld()->SpawnActor<APlaceableBaseActor>(selectedActor, currentObject->GetActorTransform(), params);
+	auto newTurret = GetWorld()->SpawnActor<APlaceableBaseActor>(selectedActorClass, currentObject->GetActorTransform(), params);
 	ensureMsgf(newTurret, TEXT("Trying to spawn an invaldi turret"));
 
 	auto gInstance = Cast<UGameInstanceManagers>(GetWorld()->GetGameInstance());
@@ -145,7 +155,8 @@ void ABuildingPawn::RemoveBuildingObject(TSubclassOf<class APlaceableBaseActor> 
 
 void ABuildingPawn::SelectActor(AActor* actor)
 {
-	onHoverCombatActor.Broadcast(actor);
+	selectedActor = actor;
+	onHoverCombatActor.Broadcast(selectedActor);
 }
 
 void ABuildingPawn::PerformRayTraceBuildingActor(const FVector& location, const FVector& direction)

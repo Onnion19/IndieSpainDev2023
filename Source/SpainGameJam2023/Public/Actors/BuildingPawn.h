@@ -29,6 +29,9 @@ protected:
 	void SpaceBarPressed();
 	void SpaceBarPressed_Implementation();
 
+	UFUNCTION()
+	void OnGameStageChange(EGameModeStage stage);
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -57,18 +60,23 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SelectActor(AActor* actor);
+protected: 
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Building")
 	TMap<TSubclassOf<class APlaceableBaseActor>, TSubclassOf<class ABaseBuildingActor>> buildingModels;
 
 	UPROPERTY(VisibleAnywhere, Category = "Building")
-	TSubclassOf<class APlaceableBaseActor> selectedActor;
+	TSubclassOf<class APlaceableBaseActor> selectedActorClass;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Building")
 	class ABaseBuildingActor* currentObject;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Building")
 	bool isBuilding = false;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Runtime")
+	AActor* selectedActor;
 
 private:
 	void PerformRayTraceBuildingActor(const FVector& location, const FVector& direction);

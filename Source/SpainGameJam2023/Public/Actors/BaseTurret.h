@@ -72,7 +72,7 @@ public:
 
 	// ICombatInterface 
 	void DealDamage_Implementation(float ammount) const override;
-	void ReceiveDamage_Implementation(float ammount) override;
+	float ReceiveDamage_Implementation(float ammount) override;
 	void GetCombatStats_Implementation(FCombatStats& out) const override;
 	void SetCombatStats_Implementation(const FCombatStats& stats) override;
 	// ~ICombatInterface
@@ -98,6 +98,12 @@ public:
 	UFUNCTION(BlueprintCallable, CallInEditor, Category = "Turret Stats")
 	void HideAttackRangeIndicator();
 
+	UFUNCTION(BlueprintCallable)
+	void IncreaseColliderZOffset();
+
+	UFUNCTION(BlueprintCallable)
+	void ReduceColliderZOffset();
+
 protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat Interface")
@@ -108,6 +114,8 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Stats")
 	float attackRange = 100.f;
+
+	
 
 	UPROPERTY(EditAnywhere, Category = "Turret Visibility")
 	class UStaticMeshComponent* turretRangeIndicator;
@@ -123,6 +131,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buidling")
 	float rangeAreaOffset = 50.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buidling")
+	float maxColliderOffset = 100.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Buidling")
+	float deltaRangeOffset = 50.f;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FRotator rangeIndicatorRotation;

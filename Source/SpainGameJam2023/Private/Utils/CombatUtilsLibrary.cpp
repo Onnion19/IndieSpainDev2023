@@ -19,13 +19,13 @@ float UCombatUtilsLibrary::ResolveCombatStats(const FCombatStats& dealer, const 
 
 
 
-void UCombatUtilsLibrary::ResolveCombatStatsByActors(AActor* dealer, AActor* receiver)
+float UCombatUtilsLibrary::ResolveCombatStatsByActors(AActor* dealer, AActor* receiver)
 {
-	if (!dealer || !receiver) return;
+	if (!dealer || !receiver) return 0.f;
 	if (!dealer->Implements<UCombatInterface>() || !receiver->Implements<UCombatInterface>())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Either Receiver or Dealer does not implement UCombatInterface"));
-		return;
+		return 0.f;
 	}
 
 
@@ -38,7 +38,7 @@ void UCombatUtilsLibrary::ResolveCombatStatsByActors(AActor* dealer, AActor* rec
 	const auto damage = ResolveCombatStats(d_s, r_s);
 	UE_LOG(LogTemp, Log, TEXT("%s Deals damage %f to %s"), *(dealer->GetName()) , damage, *(receiver->GetName()));
 	d->Execute_DealDamage(dealer, damage);
-	r->Execute_ReceiveDamage(receiver, damage);
+	return r->Execute_ReceiveDamage(receiver, damage);
 }
 
 

@@ -7,6 +7,8 @@
 #include "Components/BoxComponent.h"
 #include "Utils/CombatUtilsLibrary.h"
 #include "GameInstanceManagers.h"
+#include "Actors/GameplayManager.h"
+#include "Actors/BaseEnemy.h"
 #include "TurretsManager.h"
 #include "Components/BuildingEnergyNode.h"
 
@@ -88,7 +90,7 @@ void ABaseTurret::DealDamage_Implementation(float ammount) const {
 
 }
 
-void ABaseTurret::ReceiveDamage_Implementation(float ammount) {
+float ABaseTurret::ReceiveDamage_Implementation(float ammount) {
 	combatStats.health -= ammount;
 	onReceiveDamage.Broadcast(ammount);
 
@@ -96,6 +98,8 @@ void ABaseTurret::ReceiveDamage_Implementation(float ammount) {
 	{
 		Destroy();
 	}
+
+	return combatStats.health;
 }
 
 void ABaseTurret::GetCombatStats_Implementation(FCombatStats& out) const {
@@ -123,7 +127,19 @@ void ABaseTurret::Fire(AActor* target)
 {
 	if (target == nullptr) return;
 
-	UCombatUtilsLibrary::ResolveCombatStatsByActors(this, target);
+
+	int32 WorthGold = 0;
+	if (auto enemy = Cast<ABaseEnemy>(target))
+	{
+		WorthGold = enemy->GetGoldWorthy();
+	}
+
+	auto hp = UCombatUtilsLibrary::ResolveCombatStatsByActors(this, target);
+	if (hp <= 0.01f)
+	{
+		auto gManager = Cast<UGameInstanceManagers>(GetGameInstance())->GetGameplaymanager();
+		gManager->AddGold(WorthGold);
+	}
 }
 
 void ABaseTurret::SwapToMode(ETurretMode newMode)
@@ -216,4 +232,16 @@ void ABaseTurret::HideAttackRangeIndicator() {
 	turretRangeIndicator->SetVisibility(false, true);
 	bIsShowingRangeIndicator = false;
 	SetActorTickEnabled(false);
+}
+
+void ABaseTurret::IncreaseColliderZOffset()
+{
+	rangeAreaOffset = std::min(deltaRangeOffset + rangeAreaOffset, maxColliderOffset);
+	UpdateAttackRangeMesh(attackRange);
+}
+
+void ABaseTurret::ReduceColliderZOffset()
+{
+	rangeAreaOffset = std::max(deltaRangeOffset - rangeAreaOffset, 0.f);
+	UpdateAttackRangeMesh(attackRange);
 }

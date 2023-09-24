@@ -43,6 +43,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	class UBaseUserWidget* GetTutorialWidget()const;
 
+	UFUNCTION(BlueprintCallable)
+	void Show();
+
+	UFUNCTION(BlueprintCallable)
+	void Hide();
 private: 
 
 	void ActivateStageWidgets(EGameModeStage stage);

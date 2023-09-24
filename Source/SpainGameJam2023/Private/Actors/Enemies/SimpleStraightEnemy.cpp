@@ -5,7 +5,7 @@
 
 void ASimpleStraightEnemy::InitMovementData(const FVector& d, float s)
 {
-	direction = d;
+	movement = d;
 	speed = s;
 
 
@@ -16,6 +16,6 @@ void ASimpleStraightEnemy::Tick(float deltaTime)
 	if (speed <= 0.01f) return;
 
 	const FVector& currentPosition = GetActorLocation();
-	const FVector nextLocation = currentPosition + direction * speed * deltaTime;
+	const FVector nextLocation = currentPosition + movement * speed * deltaTime;
 	SetActorLocation(nextLocation);
 }

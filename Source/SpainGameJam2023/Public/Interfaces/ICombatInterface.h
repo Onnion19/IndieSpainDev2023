@@ -19,7 +19,7 @@ struct FCombatStats {
 	float health = 5.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float damage = 3.f;
+	float damage = 5.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float attackSpeed = 1.5f;
@@ -28,13 +28,13 @@ struct FCombatStats {
 	float defense = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float piercingDamagePercent = 0.05f;
+	float piercingDamagePercent = 0.4f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float requiredEnergy = 1.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ECombatTeam team;
+	ECombatTeam team = ECombatTeam::ENEMY;
 };
 
 
@@ -54,7 +54,7 @@ public:
 	void DealDamage(float ammount) const;
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-	void ReceiveDamage(float ammount);
+	float ReceiveDamage(float ammount);
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void GetCombatStats(FCombatStats& out) const;

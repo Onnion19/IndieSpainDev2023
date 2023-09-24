@@ -23,8 +23,8 @@ AGameplayManager::AGameplayManager()
 void AGameplayManager::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
-	auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance());
-	gameInstance->SetGamePlayManager(this);
+	if(auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance()))
+		gameInstance->SetGamePlayManager(this);
 }
 
 // Called when the game starts or when spawned
@@ -36,6 +36,7 @@ void AGameplayManager::BeginPlay()
 	{
 		SearchSpawner();
 	}
+	gold = 1;
 	ensureMsgf(spawner, TEXT("Gameplay maanger spawner reference is missing"));
 }
 

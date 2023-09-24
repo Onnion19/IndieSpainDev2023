@@ -40,6 +40,22 @@ UBaseUserWidget* AHUDManager::GetTutorialWidget() const
 	return tutorialWidget;
 }
 
+void AHUDManager::Show()
+{
+	if (root)
+	{
+		root->SetVisibility(ESlateVisibility::Visible);
+	}
+}
+
+void AHUDManager::Hide()
+{
+	if (root)
+	{
+		root->SetVisibility(ESlateVisibility::Hidden);
+	}
+}
+
 void AHUDManager::ActivateStageWidgets(EGameModeStage stage)
 {
 	auto widgetsWrapper = stageWidgets.Find(stage);
@@ -78,5 +94,5 @@ void AHUDManager::BeginPlay()
 	}
 
 	root->AddToViewport();
-	root->OnActivate();
+	Hide();
 }

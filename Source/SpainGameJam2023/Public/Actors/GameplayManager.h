@@ -9,7 +9,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWaveEndSignature);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStructureDestroyedSignature, AActor*, structure);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStructureSignature, AActor*, structure);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGoldChangeSignature, int32, gold);
 
 
@@ -136,8 +136,12 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnWaveEndSignature OnWaveEnd;
 
+
 	UPROPERTY(BlueprintAssignable)
-	FOnPlayerStructureDestroyedSignature OnPlayerStrucureDestroyed;
+	FOnPlayerStructureSignature OnPlayerStrucureCreated;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnPlayerStructureSignature OnPlayerStrucureDestroyed;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnGoldChangeSignature OnGoldChange;

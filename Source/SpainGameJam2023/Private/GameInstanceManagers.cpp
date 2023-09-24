@@ -48,6 +48,8 @@ void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
 	if (gameplayManager) {
 		gameplayManager->OnChangeGameStage(stage);
 	}
+
+	OnChangeGameStage.Broadcast(newStage);
 }
 
 void UGameInstanceManagers::Defeat()

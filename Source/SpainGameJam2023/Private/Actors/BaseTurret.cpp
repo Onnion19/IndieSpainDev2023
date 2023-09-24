@@ -50,6 +50,23 @@ void ABaseTurret::BeginDestroy() {
 	Super::BeginDestroy();
 }
 
+void ABaseTurret::OnMouseOver(UPrimitiveComponent* TouchedComponent)
+{
+	Super::OnMouseOver(TouchedComponent);
+	ShowAttackRangeIndicator();
+
+	auto& tManager = GetWorldTimerManager();
+	if (tManager.IsTimerActive(indicatorRange)) return;
+	tManager.SetTimer(indicatorRange, this, &ABaseTurret::HideAttackRangeIndicator, 1.f, false, 10.f);
+
+}
+
+void ABaseTurret::OnMouseLeaves(UPrimitiveComponent* TouchedComponent)
+{
+	Super::OnMouseLeaves(TouchedComponent);
+	HideAttackRangeIndicator();
+}
+
 // Called every frame
 void ABaseTurret::Tick(float DeltaTime)
 {

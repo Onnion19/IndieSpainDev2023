@@ -37,6 +37,12 @@ public:
 	void UnRegisterStageWidget(EGameModeStage stage, class UStageWidgets* widget);
 
 
+	UFUNCTION(BlueprintCallable)
+	void RegisterTutorialWidget(class UBaseUserWidget* widget);
+
+	UFUNCTION(BlueprintCallable)
+	class UBaseUserWidget* GetTutorialWidget()const;
+
 private: 
 
 	void ActivateStageWidgets(EGameModeStage stage);
@@ -52,6 +58,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TSubclassOf<class UBaseUserWidget> rootClass;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	class UBaseUserWidget* tutorialWidget;
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class UBaseUserWidget* root;

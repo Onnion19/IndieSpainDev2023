@@ -30,6 +30,16 @@ void AHUDManager::UnRegisterStageWidget(EGameModeStage stage, UStageWidgets* wid
 	}
 }
 
+void AHUDManager::RegisterTutorialWidget(UBaseUserWidget* widget)
+{
+	tutorialWidget = widget;
+}
+
+UBaseUserWidget* AHUDManager::GetTutorialWidget() const
+{
+	return tutorialWidget;
+}
+
 void AHUDManager::ActivateStageWidgets(EGameModeStage stage)
 {
 	auto widgetsWrapper = stageWidgets.Find(stage);

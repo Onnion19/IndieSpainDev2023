@@ -94,6 +94,7 @@ void AGameplayManager::StopWave()
 void AGameplayManager::PlayerStructureCreated(AActor* structure)
 {
 	playerStructures.Add(structure);
+	OnPlayerStrucureCreated.Broadcast(structure);
 }
 
 void AGameplayManager::PlayerStructureDestroyed(AActor* structure)

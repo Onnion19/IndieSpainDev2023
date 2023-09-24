@@ -9,6 +9,7 @@
 
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameEndSignature);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnStageChangesignature, EGameModeStage, stage);
 /**
  *
  */
@@ -68,4 +69,6 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnGameEndSignature OnVictory;
+	UPROPERTY(BlueprintAssignable)
+	FOnStageChangesignature OnChangeGameStage;
 };

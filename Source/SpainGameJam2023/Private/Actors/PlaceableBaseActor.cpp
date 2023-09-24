@@ -18,6 +18,7 @@ APlaceableBaseActor::APlaceableBaseActor()
 	buildingCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	buildingCollider->SetCollisionProfileName({ "ConstructionBuilding" });
 	buildingCollider->OnBeginCursorOver.AddDynamic(this, &APlaceableBaseActor::OnMouseOver);
+	buildingCollider->OnEndCursorOver.AddDynamic(this, &APlaceableBaseActor::OnMouseLeaves);
 	RootComponent = buildingCollider;
 
 }

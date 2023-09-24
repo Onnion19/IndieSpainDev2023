@@ -22,7 +22,10 @@ protected:
 	virtual void Destroyed()override;
 
 	UFUNCTION()
-	void OnMouseOver(UPrimitiveComponent* TouchedComponent);
+	virtual void OnMouseOver(UPrimitiveComponent* TouchedComponent);
+
+	UFUNCTION()
+	virtual void OnMouseLeaves(UPrimitiveComponent* TouchedComponent) {};
 
 	
 protected: 

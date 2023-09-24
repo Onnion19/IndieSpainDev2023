@@ -62,6 +62,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void TickBP(float deltaTime);
+
+	void OnMouseOver(UPrimitiveComponent* TouchedComponent) override;
+	void OnMouseLeaves(UPrimitiveComponent* TouchedComponent) override;
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -132,6 +135,9 @@ protected:
 	// Timers
 	UPROPERTY()
 	FTimerHandle firingTimer;
+
+	UPROPERTY()
+	FTimerHandle indicatorRange;
 
 	// DELEGATES
 	UPROPERTY(BlueprintAssignable)

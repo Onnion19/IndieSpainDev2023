@@ -47,7 +47,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	EGameModeStage GetCurrentStage()const { return stage; }
 
+	UFUNCTION(BlueprintCallable)
 	void Defeat();
+
+	UFUNCTION(BlueprintCallable)
+	void Win();
 
 protected:
 

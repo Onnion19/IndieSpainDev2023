@@ -55,5 +55,9 @@ void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
 void UGameInstanceManagers::Defeat()
 {
 	OnGameOver.Broadcast();
-	ChangeGameStage(EGameModeStage::PREPARATIONS);
+}
+
+void UGameInstanceManagers::Win()
+{
+	OnVictory.Broadcast();
 }

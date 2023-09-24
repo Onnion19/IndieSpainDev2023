@@ -4,17 +4,35 @@
 
 #include "CoreMinimal.h"
 #include "Actors/PlaceableBaseActor.h"
+#include "Interfaces/ICombatInterface.h"
 #include "BaseBeaconActor.generated.h"
 
 /**
  *
  */
 UCLASS()
-class SPAINGAMEJAM2023_API ABaseBeaconActor : public APlaceableBaseActor
+class SPAINGAMEJAM2023_API ABaseBeaconActor : public APlaceableBaseActor, public ICombatInterface
 {
 	GENERATED_BODY()
 public:
+	ABaseBeaconActor();
 	void BeginPlay()override;
-
 	void BeginDestroy() override;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsActive()const;
+
+	// ICombatInterface 
+	void DealDamage_Implementation(float ammount) const override;
+	void ReceiveDamage_Implementation(float ammount) override;
+	void GetCombatStats_Implementation(FCombatStats& out) const override;
+	void SetCombatStats_Implementation(const FCombatStats& stats) override;
+	// ~ICombatInterface
+protected: 
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FCombatStats combatStats;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	class UBuildingEnergyNode* energyNode;
 };

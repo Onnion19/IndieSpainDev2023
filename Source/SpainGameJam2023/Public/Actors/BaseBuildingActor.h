@@ -6,12 +6,15 @@
 #include "GameFramework/Actor.h"
 #include "BaseBuildingActor.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCombatActorSelected, AActor*, selectedActor);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnCombatActorUnselected);
+
 UCLASS()
 class SPAINGAMEJAM2023_API ABaseBuildingActor : public AActor
 {
 	GENERATED_BODY()
-	
-public:	
+
+public:
 	// Sets default values for this actor's properties
 	ABaseBuildingActor();
 
@@ -24,16 +27,22 @@ protected:
 
 	UFUNCTION()
 	void OnStopOverlapBuilding(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
-public:	
+
+	class AGameplayManager* GetGameplayManager();
+
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	bool CanBePlaced() const { return bIsPlaceble; }
+	bool CanBePlaced();
 
-protected: 
+	UFUNCTION(BlueprintCallable)
+	int32 GetCost()const;
 
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Colliders")
+protected:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Colliders")
 	class UBoxComponent* buildingCollider;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Visualization")
@@ -48,7 +57,16 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Colliders")
 	bool bIsPlaceble = true;
 
-private: 
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	int32 cost = 1;
+
+
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnCombatActorSelected onCombatActorSelected;
+	UPROPERTY(BlueprintAssignable)
+	FOnCombatActorUnselected onCombatSctorUnselected;
+private:
 
 	inline static const FName materialColorVariable{ "Color" };
 };

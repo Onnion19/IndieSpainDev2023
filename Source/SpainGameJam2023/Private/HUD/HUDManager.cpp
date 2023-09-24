@@ -4,10 +4,7 @@
 #include "HUD/HUDManager.h"
 #include "HUD/StageWidgets.h"
 #include "HUD/BaseUserWidget.h"
-void AHUDManager::ActorSelected(AActor* actor)
-{
-	OnActorSelected.Broadcast(actor);
-}
+
 
 void AHUDManager::ChangeStage(EGameModeStage stage)
 {
@@ -39,7 +36,7 @@ void AHUDManager::ActivateStageWidgets(EGameModeStage stage)
 	if (widgetsWrapper)
 	{
 		auto& widgets = widgetsWrapper->widgets;
-		std::for_each(widgets.begin(), widgets.end(), [](UStageWidgets* w) {w->Activate(); });
+		std::for_each(widgets.begin(), widgets.end(), [](UStageWidgets* w) {if (w)w->Activate(); });
 	}
 }
 
@@ -49,7 +46,7 @@ void AHUDManager::DeactivateStageWidgets(EGameModeStage stage)
 	if (widgetsWrapper)
 	{
 		auto& widgets = widgetsWrapper->widgets;
-		std::for_each(widgets.begin(), widgets.end(), [](UStageWidgets* w) {w->DeActivate(); });
+		std::for_each(widgets.begin(), widgets.end(), [](UStageWidgets* w) {if (w)w->DeActivate(); });
 	}
 }
 

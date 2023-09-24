@@ -19,9 +19,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UFUNCTION()
+	void OnMouseOver(UPrimitiveComponent* TouchedComponent);
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
 	
 protected: 
 

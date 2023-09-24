@@ -36,6 +36,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnDestroyBP();
 
+	void Destroyed()override;
 
 public:
 	// Called every frame

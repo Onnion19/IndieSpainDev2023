@@ -73,6 +73,27 @@ void ABaseEnergyStation::Disconnect(UBuildingEnergyNode* node)
 	connectedComponents.Remove(node);
 }
 
+void ABaseEnergyStation::DealDamage_Implementation(float ammount) const
+{
+}
+
+void ABaseEnergyStation::ReceiveDamage_Implementation(float ammount)
+{
+	combatStats.health -= ammount;
+	if (combatStats.health <= 0)
+	{
+		Destroy();
+	}
+}
+
+void ABaseEnergyStation::GetCombatStats_Implementation(FCombatStats& out) const
+{
+}
+
+void ABaseEnergyStation::SetCombatStats_Implementation(const FCombatStats& stats)
+{
+}
+
 void ABaseEnergyStation::RegisterToManager()
 {
 	if(!GetWorld()) return;
@@ -102,6 +123,10 @@ void ABaseEnergyStation::UnregisterToManager()
 
 void ABaseEnergyStation::BeginDestroy()
 {
+	if (energyBuilder && energyNode)
+	{
+		energyBuilder->ClearGraphFrom(energyNode);
+	}
 	UnregisterToManager();
 	Super::BeginDestroy();
 }

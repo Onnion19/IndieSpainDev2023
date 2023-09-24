@@ -21,7 +21,6 @@ ABuildingPawn::ABuildingPawn()
 void ABuildingPawn::BeginPlay()
 {
 	Super::BeginPlay();
-
 }
 
 // Called every frame
@@ -38,21 +37,8 @@ void ABuildingPawn::Tick(float DeltaTime)
 	// Try to find mouse position in the 3d world.
 	if (pController->DeprojectMousePositionToWorld(worldlLocation, worldDirection))
 	{
-		FHitResult hit{};
-		FCollisionQueryParams params;
-		params.AddIgnoredActor(this);
-		// See where the mouse is pointint to place the new turret
-		if (GetWorld()->LineTraceSingleByChannel(hit, worldlLocation, worldlLocation + (worldDirection * 10000000), ECollisionChannel::ECC_GameTraceChannel4, params))
-		{
-			if (!hit.Normal.Equals(FVector::UpVector,0.001f)) return;
-			const auto& hitLocation = hit.ImpactPoint;
-			currentObject->SetActorLocation(hitLocation);
-			DrawDebugLine(GetWorld(), worldlLocation, hit.Location, FColor::Green, false, 0.3f, 0u, 0.2f);
-		}
-		else
-		{
-			DrawDebugLine(GetWorld(), worldlLocation, worldlLocation + (worldDirection * 5000), FColor::Red, false, 10.f, 0u, 0.5f);
-		}
+		if (isBuilding)	PerformRayTraceBuildingActor(worldlLocation, worldDirection);
+		//else PerformRayTraceCombatActor(worldlLocation, worldDirection);
 	}
 }
 
@@ -69,22 +55,6 @@ void ABuildingPawn::SpaceBarPressed_Implementation()
 	PlaceCurrentActor();
 }
 
-
-void ABuildingPawn::PossessedBy(AController* NewController)
-{
-	Super::PossessedBy(NewController);
-	APlayerController* playerController = Cast<APlayerController>(NewController);
-	if (!playerController) return;
-
-	playerController->bShowMouseCursor = true;
-}
-
-void ABuildingPawn::UnPossessed()
-{
-	if (currentObject) {
-		currentObject->Destroy();
-	}
-}
 
 
 
@@ -136,5 +106,90 @@ void ABuildingPawn::PlaceCurrentActor() {
 	auto gampleyManager = gInstance->GetGameplaymanager();
 	if (!gampleyManager) return;
 	gampleyManager->PlayerStructureCreated(newTurret);
+	gampleyManager->AddGold(currentObject->GetCost());
 
+}
+
+void ABuildingPawn::SetIsBuidling(bool flag)
+{
+	if (isBuilding == flag) return;
+	isBuilding = flag;
+
+	if (!isBuilding && currentObject)
+		currentObject->Destroy();
+
+
+	if (isBuilding)	onStartBuildingMode.Broadcast();
+	else onStopBuildingMode.Broadcast();
+}
+
+bool ABuildingPawn::GetIsBuidling() const
+{
+	return isBuilding;
+}
+
+void ABuildingPawn::AddBuildingObject(TSubclassOf<class APlaceableBaseActor> object, TSubclassOf<class ABaseBuildingActor> placeholder)
+{
+	auto t = buildingModels.Find(object);
+	if (t) return;
+	buildingModels.Add(object, placeholder);
+	onChangedList.Broadcast();
+}
+
+void ABuildingPawn::RemoveBuildingObject(TSubclassOf<class APlaceableBaseActor> object)
+{
+	if (buildingModels.Remove(object))
+	{
+		onChangedList.Broadcast();
+	}
+}
+
+void ABuildingPawn::SelectActor(AActor* actor)
+{
+	onHoverCombatActor.Broadcast(actor);
+}
+
+void ABuildingPawn::PerformRayTraceBuildingActor(const FVector& location, const FVector& direction)
+{
+	FHitResult hit{};
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+	const FVector end = location + (direction * 10000000);
+	// See where the mouse is pointint to place the new turret
+	if (GetWorld()->LineTraceSingleByChannel(hit, location, end, ECollisionChannel::ECC_GameTraceChannel4, params))
+	{
+		if (!hit.Normal.Equals(FVector::UpVector, 0.001f)) return;
+		const auto& hitLocation = hit.ImpactPoint;
+		currentObject->SetActorLocation(hitLocation);
+		DrawDebugLine(GetWorld(), location, hit.Location, FColor::Green, false, 0.3f, 0u, 0.2f);
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), location, end, FColor::Red, false, 10.f, 0u, 0.5f);
+	}
+}
+
+void ABuildingPawn::PerformRayTraceCombatActor(const FVector& location, const FVector& direction)
+{
+	FHitResult hit{};
+	FCollisionQueryParams params;
+	params.AddIgnoredActor(this);
+	const FVector end = location + (direction * 5000);
+	// See where the mouse is pointint to place the new turret
+	if (GetWorld()->LineTraceSingleByChannel(hit, location, end, ECollisionChannel::ECC_Visibility, params))
+	{
+		if (hit.GetActor()->Implements<UCombatInterface>()) {
+			DrawDebugLine(GetWorld(), location, hit.Location, FColor::Blue, false, 0.3f, 0u, 0.2f);
+			onHoverCombatActor.Broadcast(hit.GetActor());
+		}
+		else {
+			onStopHoverCombatActor.Broadcast();
+		}
+
+	}
+	else
+	{
+		DrawDebugLine(GetWorld(), location, end, FColor::Yellow, false, 10.f, 0u, 0.5f);
+
+	}
 }

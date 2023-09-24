@@ -9,6 +9,8 @@
 #include "Actors/BaseTurret.h"
 #include "Kismet/GameplayStatics.h"
 #include "Actors/BaseBeaconActor.h"
+#include "Actors/BaseEnergyStation.h"
+#include <algorithm>
 
 // Sets default values
 AGameplayManager::AGameplayManager()
@@ -112,9 +114,26 @@ void AGameplayManager::GetPlayerStructures(TArray<AActor*>& structures) const
 	structures = playerStructures;
 }
 
+TArray<class ABaseEnergyStation*> AGameplayManager::GetPlayerEnergyStations() const
+{
+	return GetPlayerStructuresByType<ABaseEnergyStation>();
+}
+
 TArray<ABaseBeaconActor*> AGameplayManager::GetPlayerBeacons() const
 {
-	return GetPlayerStructuresByType<ABaseBeaconActor>();
+	auto beacons = GetPlayerStructuresByType<ABaseBeaconActor>();
+
+	// remvoe non active beacons
+	for (int i = beacons.Num() - 1; i > -1; i--)
+	{
+		if (!beacons[i]->IsActive())
+		{
+			beacons.RemoveAt(i);
+		}
+	}
+
+	return beacons;
+
 }
 
 void AGameplayManager::Defeat()
@@ -155,6 +174,17 @@ void AGameplayManager::EnemyDestroyed(ABaseEnemy* enemy)
 		}
 	}
 
+}
+
+void AGameplayManager::AddGold(int32 deltaGold)
+{
+	gold = std::max(0, gold + deltaGold);
+	OnGoldChange.Broadcast(gold);
+}
+
+int32 AGameplayManager::GetGold() const
+{
+	return gold;
 }
 
 void AGameplayManager::EnablePlayerStructures()

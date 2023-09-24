@@ -18,12 +18,14 @@ ABaseEnergyPipe::ABaseEnergyPipe()
 void ABaseEnergyPipe::ConnectRoot(UBuildingEnergyNode* new_root)
 {
 	root = new_root;
+	if (root) root->NewOutPipe(this);
 	UpdateMaterial();
 }
 
 void ABaseEnergyPipe::ConnectDestiny(UBuildingEnergyNode* new_destiny)
 {
 	destiny = new_destiny;
+	if (destiny)destiny->NewInPipe(this);
 	UpdateDestinyEnergy();
 }
 
@@ -54,6 +56,7 @@ void ABaseEnergyPipe::UpdateMeshLocation()
 void ABaseEnergyPipe::DisconnectRoot()
 {
 	DisconnectRootBP();
+	root->RemovePipe(this);
 	root = nullptr;
 	UpdateDestinyEnergy();
 }
@@ -61,6 +64,7 @@ void ABaseEnergyPipe::DisconnectRoot()
 void ABaseEnergyPipe::DisconnectDestiny()
 {
 	DisconnectDestinyBP();
+	destiny->RemovePipe(this);
 	destiny = nullptr;
 }
 

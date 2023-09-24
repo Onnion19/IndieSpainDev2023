@@ -6,6 +6,12 @@
 #include "GameFramework/Pawn.h"
 #include "BuildingPawn.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnIsBuildingChange);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnBuildingObjectListChange);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHoverCombatActor, AActor*, selected);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStopHoverCombatActor);
+
+
 UCLASS()
 class SPAINGAMEJAM2023_API ABuildingPawn : public APawn
 {
@@ -23,10 +29,7 @@ protected:
 	void SpaceBarPressed();
 	void SpaceBarPressed_Implementation();
 
-	void PossessedBy(AController* NewController) override;
-	void UnPossessed()override;
-
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -40,13 +43,49 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PlaceCurrentActor();
 
-protected: 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category ="Building")
+	UFUNCTION(BlueprintCallable)
+	void SetIsBuidling(bool flag);
+
+	UFUNCTION(BlueprintCallable)
+	bool GetIsBuidling() const;
+
+	UFUNCTION(BlueprintCallable)
+	void AddBuildingObject(TSubclassOf<class APlaceableBaseActor> object, TSubclassOf<class ABaseBuildingActor> placeholder);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveBuildingObject(TSubclassOf<class APlaceableBaseActor> object);
+
+	UFUNCTION(BlueprintCallable)
+	void SelectActor(AActor* actor);
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Building")
 	TMap<TSubclassOf<class APlaceableBaseActor>, TSubclassOf<class ABaseBuildingActor>> buildingModels;
 
-	UPROPERTY(VisibleAnywhere, Category ="Building")
+	UPROPERTY(VisibleAnywhere, Category = "Building")
 	TSubclassOf<class APlaceableBaseActor> selectedActor;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category ="Building")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Building")
 	class ABaseBuildingActor* currentObject;
+
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Building")
+	bool isBuilding = false;
+
+private:
+	void PerformRayTraceBuildingActor(const FVector& location, const FVector& direction);
+	void PerformRayTraceCombatActor(const FVector& location, const FVector& direction);
+public:
+
+	UPROPERTY(BlueprintAssignable)
+	FOnIsBuildingChange onStartBuildingMode;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnIsBuildingChange onStopBuildingMode;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnBuildingObjectListChange onChangedList;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnHoverCombatActor onHoverCombatActor;
+	UPROPERTY(BlueprintAssignable)
+	FOnStopHoverCombatActor onStopHoverCombatActor;
 };

@@ -9,10 +9,6 @@
 #include "HUDManager.generated.h"
 
 
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnActorSelectedSignature, AActor*, selectedActor);
-
-
 USTRUCT(BlueprintType)
 struct FStageWidgetsArray {
 	GENERATED_BODY()
@@ -31,8 +27,6 @@ class SPAINGAMEJAM2023_API AHUDManager : public AHUD
 
 public:
 
-	UFUNCTION(BlueprintCallable)
-	void ActorSelected(AActor* actor);
 
 	void ChangeStage(EGameModeStage stage);
 
@@ -64,8 +58,4 @@ protected:
 
 	EGameModeStage currentStage;
 
-public: 
-
-	UPROPERTY(BlueprintAssignable)
-	FOnActorSelectedSignature OnActorSelected;
 };

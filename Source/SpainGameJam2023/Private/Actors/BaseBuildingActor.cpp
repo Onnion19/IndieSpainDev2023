@@ -3,6 +3,8 @@
 
 #include "Actors/BaseBuildingActor.h"
 #include "Components/BoxComponent.h"
+#include "GameInstanceManagers.h"
+#include "Actors/GameplayManager.h"
 #include <algorithm>
 
 // Sets default values
@@ -46,7 +48,20 @@ void ABaseBuildingActor::BeginPlay()
 void ABaseBuildingActor::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
+bool ABaseBuildingActor::CanBePlaced()
+{
+	bool bIsAffordable = true;
+	if (auto manager = GetGameplayManager()) {
+		bIsAffordable = manager->GetGold() >= cost;
+	}
+	return bIsPlaceble && bIsAffordable;
+}
+
+int32 ABaseBuildingActor::GetCost()const
+{
+	return cost;
 }
 
 void ABaseBuildingActor::OnOverlapBuilding(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -59,4 +74,18 @@ void ABaseBuildingActor::OnOverlapBuilding(UPrimitiveComponent* OverlappedCompon
 void ABaseBuildingActor::OnStopOverlapBuilding(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex) {
 	materialInstance->SetVectorParameterValue(materialColorVariable, FColor::Green);
 	bIsPlaceble = true;
+}
+
+AGameplayManager* ABaseBuildingActor::GetGameplayManager()
+{
+	AGameplayManager* gManager = nullptr;
+	if (GetWorld())
+	{
+		if (auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance()))
+		{
+			gManager = gInstance->GetGameplaymanager();
+		}
+
+	}
+	return gManager;
 }

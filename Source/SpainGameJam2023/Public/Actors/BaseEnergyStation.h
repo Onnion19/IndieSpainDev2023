@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Actors/PlaceableBaseActor.h"
+#include "Interfaces/ICombatInterface.h"
 #include "BaseEnergyStation.generated.h"
 
 UCLASS()
-class SPAINGAMEJAM2023_API ABaseEnergyStation : public APlaceableBaseActor
+class SPAINGAMEJAM2023_API ABaseEnergyStation : public APlaceableBaseActor, public ICombatInterface
 {
 	GENERATED_BODY()
 
@@ -32,6 +33,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Disconnect(class UBuildingEnergyNode* node);
+
+	// ICombatInterface 
+	void DealDamage_Implementation(float ammount) const override;
+	void ReceiveDamage_Implementation(float ammount) override;
+	void GetCombatStats_Implementation(FCombatStats& out) const override;
+	void SetCombatStats_Implementation(const FCombatStats& stats) override;
+	// ~ICombatInterface
 protected: 
 
 	void RegisterToManager();
@@ -56,6 +64,9 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	TArray<class UBuildingEnergyNode*> connectedComponents;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FCombatStats combatStats;
 
 	bool init = false;
 

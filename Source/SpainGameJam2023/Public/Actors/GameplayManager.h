@@ -10,6 +10,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnWaveEndSignature);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnPlayerStructureDestroyedSignature, AActor*, structure);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnGoldChangeSignature, int32, gold);
 
 
 UCLASS()
@@ -66,6 +67,9 @@ public:
 	void GetPlayerStructures(TArray<AActor*>& structures)const;
 
 	UFUNCTION(BlueprintCallable)
+	TArray<class ABaseEnergyStation*> GetPlayerEnergyStations()const;
+
+	UFUNCTION(BlueprintCallable)
 	TArray<class ABaseBeaconActor*> GetPlayerBeacons()const;
 
 	template<typename T>
@@ -87,6 +91,12 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void EnemyDestroyed(class ABaseEnemy* enemy);
+
+	UFUNCTION(BlueprintCallable)
+	void AddGold(int32 deltaGold);
+
+	UFUNCTION(BlueprintCallable)
+	int32 GetGold()const;
 
 private:
 
@@ -119,10 +129,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Wave")
 	TArray<class ABaseEnemy*> spawnedEnemies;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Gold")
+	int32 gold = 0;
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnWaveEndSignature OnWaveEnd;
 
 	UPROPERTY(BlueprintAssignable)
 	FOnPlayerStructureDestroyedSignature OnPlayerStrucureDestroyed;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnGoldChangeSignature OnGoldChange;
 };

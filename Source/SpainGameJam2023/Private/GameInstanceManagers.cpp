@@ -6,16 +6,12 @@
 #include "HUD/HUDManager.h"
 #include "TurretsManager.h"
 #include "Actors/GameplayManager.h"
+#include "Kismet/GameplayStatics.h"
 
 void UGameInstanceManagers::CreateEnergyManager()
 {
 	energyManager = NewObject<UEnergyManager>(this, { "Energy Managaer" });
 	ensureMsgf(energyManager, TEXT("Error generating energy manager"));
-}
-void UGameInstanceManagers::CreateHudManager()
-{
-	hudManager = GetWorld()->SpawnActor<AHUDManager>(AHUDManager::StaticClass());
-	ensureMsgf(hudManager, TEXT("Hud manager could not generated"));
 }
 
 void UGameInstanceManagers::CreateTurretsManager()
@@ -27,21 +23,28 @@ void UGameInstanceManagers::CreateTurretsManager()
 
 void UGameInstanceManagers::Init()
 {
-
 	CreateEnergyManager();
 	CreateTurretsManager();
-	CreateHudManager();
 	Super::Init();
+}
+
+AHUDManager* UGameInstanceManagers::GetHudManager() const
+{
+	if (auto controller = UGameplayStatics::GetPlayerController(this, 0))
+		return controller->GetHUD<AHUDManager>();
+
+	return nullptr;
 }
 
 void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
 {
-	if (newStage == stage) return; 
+	if (newStage == stage) return;
 
 	stage = newStage;
 	energyManager->OnChangeGameStage(stage);
 	turretsManager->OnChangeGameStage(stage);
-	hudManager->ChangeStage(stage);
+	if (auto hudManager = GetHudManager())hudManager->ChangeStage(stage);
+
 	if (gameplayManager) {
 		gameplayManager->OnChangeGameStage(stage);
 	}

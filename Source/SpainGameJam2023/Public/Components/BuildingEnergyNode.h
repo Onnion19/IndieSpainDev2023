@@ -7,6 +7,8 @@
 #include "BuildingEnergyNode.generated.h"
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnEnergyActivateSignature);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class SPAINGAMEJAM2023_API UBuildingEnergyNode : public UActorComponent
 {
@@ -20,6 +22,8 @@ public:
 	UBuildingEnergyNode();
 
 	void BeginPlay() override;
+
+	void OnComponentDestroyed(bool bDestroyingHierarchy);
 
 	UFUNCTION(BlueprintCallable)
 	void NewOutPipe(class ABaseEnergyPipe* pipe);
@@ -51,6 +55,7 @@ protected:
 
 	void ConnectToStation(class ABaseEnergyStation* station);
 
+
 protected:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -64,5 +69,13 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	class ABaseEnergyPipe* inPipe;
+
+public: 
+
+	UPROPERTY(BlueprintAssignable)
+	FOnEnergyActivateSignature OnReceiveEnergy;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnEnergyActivateSignature OnStopReceiveEnergy;
 
 };

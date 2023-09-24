@@ -4,6 +4,12 @@
 #include "Actors/BaseBeaconActor.h"
 #include "Actors/GameplayManager.h"
 #include "GameInstanceManagers.h"
+#include "Components/BuildingEnergyNode.h"
+
+ABaseBeaconActor::ABaseBeaconActor()
+{
+	energyNode = CreateDefaultSubobject< UBuildingEnergyNode>("Energy node");
+}
 
 void ABaseBeaconActor::BeginPlay()
 {
@@ -34,4 +40,33 @@ void ABaseBeaconActor::BeginDestroy()
 	}
 
 	Super::BeginDestroy();
+}
+
+bool ABaseBeaconActor::IsActive() const
+{
+	return energyNode->GetNodeEnergy() >= 0.f;
+}
+
+void ABaseBeaconActor::DealDamage_Implementation(float ammount) const
+{
+
+}
+
+void ABaseBeaconActor::ReceiveDamage_Implementation(float ammount)
+{
+	combatStats.health -= ammount;
+	if (combatStats.health <= 0)
+	{
+		Destroy();
+	}
+}
+
+void ABaseBeaconActor::GetCombatStats_Implementation(FCombatStats& out) const
+{
+	out = combatStats;
+}
+
+void ABaseBeaconActor::SetCombatStats_Implementation(const FCombatStats& stats)
+{
+	combatStats = stats;
 }

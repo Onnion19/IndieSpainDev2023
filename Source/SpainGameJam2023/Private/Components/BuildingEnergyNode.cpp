@@ -3,6 +3,7 @@
 
 #include "Components/BuildingEnergyNode.h"
 #include "Actors/BaseEnergyPipe.h"
+#include "Actors/BaseEnergyStation.h"
 #include "GameInstanceManagers.h"
 #include "Energy/EnergyManager.h"
 #include "Actors/BaseEnergyStation.h"
@@ -33,6 +34,20 @@ void UBuildingEnergyNode::BeginPlay()
 	}
 }
 
+void UBuildingEnergyNode::OnComponentDestroyed(bool bDestroyingHierarchy)
+{
+	if (inPipe)
+	{
+		if (auto station = Cast<ABaseEnergyStation>(inPipe->GetOwner()))
+		{
+			station->Disconnect(this);
+			station->RebuildPipeGraph();
+		}
+	}
+
+	Super::OnComponentDestroyed(bDestroyingHierarchy);
+}
+
 void UBuildingEnergyNode::NewOutPipe(ABaseEnergyPipe* pipe)
 {
 	if (pipe == inPipe)
@@ -46,12 +61,13 @@ void UBuildingEnergyNode::NewOutPipe(ABaseEnergyPipe* pipe)
 
 void UBuildingEnergyNode::NewInPipe(ABaseEnergyPipe* pipe)
 {
-	// Here probably need to update de graph if the inpipe changes (if we want to be a dynamic graph)
+
 	inPipe = pipe;
 }
 
 void UBuildingEnergyNode::RemovePipe(ABaseEnergyPipe* pipe)
 {
+	if (!pipe)return;
 	outPipes.Remove(pipe);
 
 	if (inPipe == pipe)
@@ -72,7 +88,14 @@ ABaseEnergyPipe* UBuildingEnergyNode::GetInPipe() const
 
 void UBuildingEnergyNode::SetEnergyIncome(float energyLevel)
 {
-	incomingEnergy= energyLevel;
+	bool hadEnergy = GetNodeEnergy() >= 0;
+	incomingEnergy = energyLevel;
+	bool hasEnergyNow = GetNodeEnergy() >= 0;
+	if (hadEnergy != hasEnergyNow)
+	{
+		if (hasEnergyNow) OnReceiveEnergy.Broadcast();
+		else OnStopReceiveEnergy.Broadcast();
+	}
 }
 
 float UBuildingEnergyNode::GetEnergyConsumption() const
@@ -97,7 +120,7 @@ ABaseEnergyStation* UBuildingEnergyNode::FindClosestStation()
 	const FVector location = GetOwner()->GetActorLocation();
 	float min = std::numeric_limits<float>::max();
 	ABaseEnergyStation* bestStation = nullptr;
-	for(auto station : stations)
+	for (auto station : stations)
 	{
 		const FVector stationLocation = station->GetActorLocation();
 		const auto range = station->GetRange() * station->GetRange();
@@ -110,7 +133,7 @@ ABaseEnergyStation* UBuildingEnergyNode::FindClosestStation()
 	}
 
 	return bestStation;
-	
+
 }
 
 void UBuildingEnergyNode::ConnectToStation(ABaseEnergyStation* station)
@@ -120,6 +143,3 @@ void UBuildingEnergyNode::ConnectToStation(ABaseEnergyStation* station)
 	station->Connect(this);
 	station->RebuildPipeGraph();
 }
-
-
-

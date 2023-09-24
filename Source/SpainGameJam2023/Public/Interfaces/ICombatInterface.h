@@ -7,7 +7,7 @@ UENUM(BlueprintType)
 enum class ECombatTeam : uint8
 {
 	NEUTRAL UMETA(DisplayName = "Neutral"),
-	FRIENDLY UMETA(DisplayName = "Friendly"), 
+	FRIENDLY UMETA(DisplayName = "Friendly"),
 	ENEMY UMETA(DisplayName = "Enemy")
 };
 
@@ -50,15 +50,15 @@ class ICombatInterface
 
 public:
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void DealDamage(float ammount) const;
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void ReceiveDamage(float ammount);
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void GetCombatStats(FCombatStats& out) const;
 
-	UFUNCTION(BlueprintNativeEvent)
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
 	void SetCombatStats(const FCombatStats& stats);
 };

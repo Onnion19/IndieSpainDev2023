@@ -3,6 +3,8 @@
 
 #include "Actors/PlaceableBaseActor.h"
 #include "Components/BoxComponent.h"
+#include "Actors/BuildingPawn.h"
+#include "Kismet/GameplayStatics.h"
 // Sets default values
 APlaceableBaseActor::APlaceableBaseActor()
 {
@@ -13,7 +15,7 @@ APlaceableBaseActor::APlaceableBaseActor()
 	buildingCollider = CreateDefaultSubobject<UBoxComponent>("BuldingCollider");
 	buildingCollider->AttachToComponent(RootComponent, FAttachmentTransformRules{ EAttachmentRule::KeepRelative, false });
 	buildingCollider->SetCollisionProfileName({ "ConstructionBuilding" });
-
+	buildingCollider->OnBeginCursorOver.AddDynamic(this, &APlaceableBaseActor::OnMouseOver);
 	RootComponent = buildingCollider;
 
 }
@@ -23,6 +25,16 @@ void APlaceableBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
 	
+}
+
+void APlaceableBaseActor::OnMouseOver(UPrimitiveComponent* TouchedComponent)
+{
+	auto world = GetWorld();
+	if (!world)return;
+	if (auto pawn = Cast<ABuildingPawn>(UGameplayStatics::GetPlayerPawn(world, 0)))
+	{
+		pawn->SelectActor(this);
+	}
 }
 
 // Called every frame

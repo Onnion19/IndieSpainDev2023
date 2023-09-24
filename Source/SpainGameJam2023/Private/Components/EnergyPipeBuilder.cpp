@@ -71,6 +71,15 @@ void UEnergyPipeBuilder::BuildGraphFromNode(UBuildingEnergyNode* node, TArray<UB
 		connectedNodes.Add(destiny);
 		nodesToConnect.Remove(destiny);
 	}
+
+	if (!unusedPipes.IsEmpty())
+	{
+		for (auto pipe : unusedPipes)
+		{
+			if (pipe)pipe->Destroy();
+		}
+		unusedPipes.Empty();
+	}
 }
 
 void UEnergyPipeBuilder::BuildPipeFromNode(UBuildingEnergyNode* from, UBuildingEnergyNode* to)
@@ -105,7 +114,7 @@ ABaseEnergyPipe* UEnergyPipeBuilder::CreateNewPipe()
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not generate new pipe"));
 	}
-
+	newPipe->SetOwner(GetOwner());
 	pipes.Add(newPipe);
 
 	return newPipe;

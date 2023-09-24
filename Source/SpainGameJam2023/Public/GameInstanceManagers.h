@@ -19,7 +19,6 @@ class SPAINGAMEJAM2023_API UGameInstanceManagers : public UGameInstance
 
 private:
 	void CreateEnergyManager();
-	void CreateHudManager();
 	void CreateTurretsManager();
 
 public:
@@ -29,7 +28,7 @@ public:
 	class UEnergyManager* GetEnergyManager() const { return energyManager; }
 
 	UFUNCTION(BlueprintCallable)
-	class AHUDManager* GetHudManager() const { return hudManager; }
+	class AHUDManager* GetHudManager() const;
 
 	UFUNCTION(BlueprintCallable)
 	class UTurretsManager* GetTurretsManager() const { return turretsManager; }
@@ -53,9 +52,6 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
 	class UEnergyManager* energyManager;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
-	class AHUDManager* hudManager;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Managers")
 	class UTurretsManager* turretsManager;

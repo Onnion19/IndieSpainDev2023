@@ -73,21 +73,21 @@ void ABaseEnemy::Activate()
 	ActivateBP();
 }
 
-void ABaseEnemy::DestroyEnemy()
+void ABaseEnemy::Destroyed()
 {
-	if (!GetWorld())return;
-	auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance());
-	if (gInstance)
+	if (GetWorld())
 	{
-		if (auto manager = gInstance->GetGameplaymanager())
+		auto gInstance = Cast<UGameInstanceManagers>(GetGameInstance());
+		if (gInstance)
 		{
-			manager->EnemyDestroyed(this);
+			if (auto manager = gInstance->GetGameplaymanager())
+			{
+				manager->EnemyDestroyed(this);
+			}
 		}
 	}
 
-	OnDestroyBP();
-
-	Destroy();
+	Super::Destroyed();
 }
 
 void ABaseEnemy::DealDamage_Implementation(float ammount) const
@@ -112,5 +112,11 @@ void ABaseEnemy::GetCombatStats_Implementation(FCombatStats& out) const
 void ABaseEnemy::SetCombatStats_Implementation(const FCombatStats& stats)
 {
 	combatStats = stats;
+}
+
+void ABaseEnemy::DestroyEnemy()
+{
+	OnDestroyBP();
+	Destroy();
 }
 

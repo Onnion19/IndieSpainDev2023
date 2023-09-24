@@ -14,32 +14,7 @@ ABaseBeaconActor::ABaseBeaconActor()
 void ABaseBeaconActor::BeginPlay()
 {
 	Super::BeginPlay();
-	if (!GetWorld())return;
 
-	if (auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance()))
-	{
-		if (auto gameplayManager = gameInstance->GetGameplaymanager())
-		{
-			gameplayManager->PlayerStructureCreated(this);
-		}
-	}
-
-}
-
-void ABaseBeaconActor::BeginDestroy()
-{
-	if (GetWorld()) {
-
-		if (auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance()))
-		{
-			if (auto gameplayManager = gameInstance->GetGameplaymanager())
-			{
-				gameplayManager->PlayerStructureDestroyed(this);
-			}
-		}
-	}
-
-	Super::BeginDestroy();
 }
 
 bool ABaseBeaconActor::IsActive() const

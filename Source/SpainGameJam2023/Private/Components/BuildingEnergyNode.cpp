@@ -28,6 +28,8 @@ void UBuildingEnergyNode::BeginPlay()
 {
 	Super::BeginPlay();
 
+	if (auto station = Cast<ABaseEnergyStation>(GetOwner())) return; /// nothing else to do
+
 	if (auto station = FindClosestStation())
 	{
 		ConnectToStation(station);

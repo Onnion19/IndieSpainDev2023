@@ -32,6 +32,7 @@ ABaseTurret::ABaseTurret()
 
 
 	energyNodeComponent = CreateDefaultSubobject<UBuildingEnergyNode>("Energy node");
+	energyNodeComponent->OnStopReceiveEnergy.AddDynamic(this, &ABaseTurret::StopFiringMode);
 }
 
 // Called when the game starts or when spawned
@@ -129,7 +130,7 @@ void ABaseTurret::SwapToMode(ETurretMode newMode)
 
 
 void ABaseTurret::StartFiringMode() {
-	ensureMsgf(combatStats.attackSpeed > 0.1f, TEXT("Can't start turret firing sequence: Fire rate to high: %d"), combatStats.attackSpeed);
+
 	const float attackPerSecond = combatStats.attackSpeed * energyNodeComponent->GetNodeEnergy() / (combatStats.requiredEnergy + 0.01f);
 	if (attackPerSecond < 0.01f) return;
 	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFire, 1 / attackPerSecond, true);
@@ -151,7 +152,7 @@ void ABaseTurret::UpdateAttackRangeMesh(float arange) {
 
 	const auto radius = static_cast<float>(turretRangeIndicator->GetStaticMesh()->GetBounds().SphereRadius);
 	FVector Scale3D{ arange, arange, arange };
-	Scale3D /= 2*radius;
+	Scale3D /= 2 * radius;
 
 	turretRangeIndicator->SetWorldScale3D(Scale3D);
 	turretRangeCollider->SetSphereRadius(arange / 2);

@@ -105,8 +105,7 @@ void ABuildingPawn::PlaceCurrentActor() {
 
 	auto gampleyManager = gInstance->GetGameplaymanager();
 	if (!gampleyManager) return;
-	gampleyManager->PlayerStructureCreated(newTurret);
-	gampleyManager->AddGold(currentObject->GetCost());
+	gampleyManager->AddGold(-currentObject->GetCost());
 
 }
 

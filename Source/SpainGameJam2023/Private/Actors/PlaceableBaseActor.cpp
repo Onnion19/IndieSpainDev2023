@@ -4,11 +4,13 @@
 #include "Actors/PlaceableBaseActor.h"
 #include "Components/BoxComponent.h"
 #include "Actors/BuildingPawn.h"
+#include "GameInstanceManagers.h"
+#include "Actors/GameplayManager.h"
 #include "Kismet/GameplayStatics.h"
 // Sets default values
 APlaceableBaseActor::APlaceableBaseActor()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Turret Bulding collider
@@ -24,7 +26,34 @@ APlaceableBaseActor::APlaceableBaseActor()
 void APlaceableBaseActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	if (!GetWorld())return;
+
+	if (auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance()))
+	{
+		if (auto gameplayManager = gameInstance->GetGameplaymanager())
+		{
+			gameplayManager->PlayerStructureCreated(this);
+		}
+	}
+}
+
+void APlaceableBaseActor::Destroyed()
+{
+
+	if (GetWorld())
+	{
+		if (auto gameInstance = Cast<UGameInstanceManagers>(GetGameInstance()))
+		{
+			if (auto gameplayManager = gameInstance->GetGameplaymanager())
+			{
+				gameplayManager->PlayerStructureDestroyed(this);
+			}
+		}
+
+	}
+
+	Super::Destroyed();
 }
 
 void APlaceableBaseActor::OnMouseOver(UPrimitiveComponent* TouchedComponent)
@@ -35,12 +64,5 @@ void APlaceableBaseActor::OnMouseOver(UPrimitiveComponent* TouchedComponent)
 	{
 		pawn->SelectActor(this);
 	}
-}
-
-// Called every frame
-void APlaceableBaseActor::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
 }
 

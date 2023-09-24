@@ -19,21 +19,28 @@ UEnergyPipeBuilder::UEnergyPipeBuilder()
 
 void UEnergyPipeBuilder::RebuildPipeGraphFromNode(UBuildingEnergyNode* node, TArray<UBuildingEnergyNode*> nodesToConnect)
 {
-	ClearGraphFrom(node);
+	ClearGraphFrom(node, false);
 	BuildGraphFromNode(node, nodesToConnect);
 }
 
-void UEnergyPipeBuilder::ClearGraphFrom(UBuildingEnergyNode* node)
+void UEnergyPipeBuilder::ClearGraphFrom(UBuildingEnergyNode* node, bool cleanPipes)
 {
 	if (!node) return;
 
 	TArray<ABaseEnergyPipe*> node_pipes;
 	node->GetOutPipes(node_pipes);
-	for (auto& pipe : node_pipes)
+	for (auto pipe : node_pipes)
 	{
+
 		ClearGraphFrom(pipe);
 		unusedPipes.AddUnique(pipe);
 	}
+
+	if (cleanPipes)
+	{
+		CleanUnusedPipes();
+	}
+
 
 }
 
@@ -72,14 +79,7 @@ void UEnergyPipeBuilder::BuildGraphFromNode(UBuildingEnergyNode* node, TArray<UB
 		nodesToConnect.Remove(destiny);
 	}
 
-	if (!unusedPipes.IsEmpty())
-	{
-		for (auto pipe : unusedPipes)
-		{
-			if (pipe)pipe->Destroy();
-		}
-		unusedPipes.Empty();
-	}
+	CleanUnusedPipes();
 }
 
 void UEnergyPipeBuilder::BuildPipeFromNode(UBuildingEnergyNode* from, UBuildingEnergyNode* to)
@@ -120,11 +120,6 @@ ABaseEnergyPipe* UEnergyPipeBuilder::CreateNewPipe()
 	return newPipe;
 }
 
-void UEnergyPipeBuilder::StopUsingPipe(ABaseEnergyPipe* pipe)
-{
-	pipe->DisconnectRootDestiny();
-	unusedPipes.AddUnique(pipe);
-}
 
 std::tuple<UBuildingEnergyNode*, float> UEnergyPipeBuilder::FindClosestNodeFrom(UBuildingEnergyNode* node, const TArray<UBuildingEnergyNode*>& candidates)
 {
@@ -148,6 +143,17 @@ std::tuple<UBuildingEnergyNode*, float> UEnergyPipeBuilder::FindClosestNodeFrom(
 	}
 
 	return { closestNode, minDistance };
+}
+
+void UEnergyPipeBuilder::CleanUnusedPipes()
+{
+
+	for (auto pipe : unusedPipes)
+	{
+		if (pipe)pipe->Destroy();
+	}
+	unusedPipes.Empty();
+
 }
 
 

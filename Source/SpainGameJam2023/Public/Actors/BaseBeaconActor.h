@@ -17,7 +17,6 @@ class SPAINGAMEJAM2023_API ABaseBeaconActor : public APlaceableBaseActor, public
 public:
 	ABaseBeaconActor();
 	void BeginPlay()override;
-	void BeginDestroy() override;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsActive()const;

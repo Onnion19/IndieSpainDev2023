@@ -21,7 +21,7 @@ public:
 	void RebuildPipeGraphFromNode(class UBuildingEnergyNode* node, TArray<class UBuildingEnergyNode*> nodesToConnect);
 
 	UFUNCTION(BlueprintCallable)
-	void ClearGraphFrom(class UBuildingEnergyNode* node);
+	void ClearGraphFrom(class UBuildingEnergyNode* node, bool clearPipes = false);
 
 protected: 
 
@@ -38,9 +38,9 @@ protected:
 
 	class ABaseEnergyPipe* CreateNewPipe();
 
-	void StopUsingPipe(class ABaseEnergyPipe* pipe);
-
 	std::tuple<class UBuildingEnergyNode*, float> FindClosestNodeFrom(class UBuildingEnergyNode* node, const TArray<class UBuildingEnergyNode*>& candidates);
+
+	void CleanUnusedPipes();
 
 protected: 
 

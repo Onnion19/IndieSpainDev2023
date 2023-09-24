@@ -48,6 +48,18 @@ void ABaseEnergyStation::BeginPlay()
 	RebuildPipeGraph();
 }
 
+void ABaseEnergyStation::Destroyed()
+{
+	if (energyBuilder)
+	{
+		energyBuilder->ClearGraphFrom(energyNode, true);
+	}
+
+	UnregisterToManager();
+
+	Super::Destroyed();
+}
+
 void ABaseEnergyStation::RebuildPipeGraph()
 {
 	if (!init)return;
@@ -123,11 +135,6 @@ void ABaseEnergyStation::UnregisterToManager()
 
 void ABaseEnergyStation::BeginDestroy()
 {
-	if (energyBuilder && energyNode)
-	{
-		energyBuilder->ClearGraphFrom(energyNode);
-	}
-	UnregisterToManager();
 	Super::BeginDestroy();
 }
 

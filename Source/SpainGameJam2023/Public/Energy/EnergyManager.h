@@ -19,6 +19,8 @@ class SPAINGAMEJAM2023_API UEnergyManager : public UBaseManager
 	GENERATED_BODY()
 public:
 
+	void Restart();
+
 	UFUNCTION(BlueprintCallable)
 	void RegisterEnergyStation(class ABaseEnergyStation* station) { stationList.AddUnique(station); }
 

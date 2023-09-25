@@ -148,7 +148,7 @@ void AEnemySpawner::SpawnEnemy(TSubclassOf<class ABaseEnemy> enemy)
 	if (!world)return;
 
 	auto angle = FMath::RandRange(0.f, 360.f);
-	auto distance = FMath::RandRange(0.f, range);
+	auto distance = FMath::RandRange(0.f, range*2);
 
 
 	FVector location = GetActorLocation() + (FVector{ FMath::Cos(angle), FMath::Sin(angle) , 0 } *distance);

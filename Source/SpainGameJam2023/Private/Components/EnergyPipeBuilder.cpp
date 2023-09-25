@@ -84,12 +84,14 @@ void UEnergyPipeBuilder::BuildGraphFromNode(UBuildingEnergyNode* node, TArray<UB
 
 void UEnergyPipeBuilder::BuildPipeFromNode(UBuildingEnergyNode* from, UBuildingEnergyNode* to)
 {
+	if (!from || !to) return;
 	auto pipe = GetOrCreateUnusedPipe();
 	pipe->ConnectRootDestiny(from, to);
 }
 
 void UEnergyPipeBuilder::ClearGraphFrom(ABaseEnergyPipe* node)
 {
+	if (!node)return;
 	auto dest = node->GetDestiny();
 	node->DisconnectRootDestiny();
 	ClearGraphFrom(dest);

@@ -4,7 +4,6 @@
 #include "GameInstanceManagers.h"
 #include "Energy/EnergyManager.h"
 #include "HUD/HUDManager.h"
-#include "TurretsManager.h"
 #include "Actors/GameplayManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -14,18 +13,16 @@ void UGameInstanceManagers::CreateEnergyManager()
 	ensureMsgf(energyManager, TEXT("Error generating energy manager"));
 }
 
-void UGameInstanceManagers::CreateTurretsManager()
-{
-	turretsManager = NewObject<UTurretsManager>(this, { "Turrets Manager" });
-	ensureMsgf(turretsManager, TEXT("Turrets manager could not be generated"));
-}
-
-
 void UGameInstanceManagers::Init()
 {
 	CreateEnergyManager();
-	CreateTurretsManager();
 	Super::Init();
+}
+
+void UGameInstanceManagers::ResetGameInstance()
+{
+	gameplayManager = nullptr;
+	energyManager->Restart();
 }
 
 AHUDManager* UGameInstanceManagers::GetHudManager() const
@@ -42,7 +39,6 @@ void UGameInstanceManagers::ChangeGameStage(EGameModeStage newStage)
 
 	stage = newStage;
 	energyManager->OnChangeGameStage(stage);
-	turretsManager->OnChangeGameStage(stage);
 	if (auto hudManager = GetHudManager())hudManager->ChangeStage(stage);
 
 	if (gameplayManager) {

@@ -2,3 +2,8 @@
 
 
 #include "Energy/EnergyManager.h"
+
+void UEnergyManager::Restart()
+{
+	stationList.Empty();
+}

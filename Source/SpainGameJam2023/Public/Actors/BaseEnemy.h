@@ -38,6 +38,9 @@ protected:
 
 	void Destroyed()override;
 
+	UFUNCTION(BlueprintCallable)
+	void DestroyEnemy();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -64,7 +67,7 @@ public:
 	void SetCombatStats_Implementation(const FCombatStats& stats) override;
 	// ~ICombatInterface
 
-	void DestroyEnemy();
+	
 
 protected:
 
@@ -82,4 +85,7 @@ protected:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	class UStaticMeshComponent* mesh;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	bool bAutomaticDestroy = true;
 };

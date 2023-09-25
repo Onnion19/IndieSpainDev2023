@@ -40,6 +40,8 @@ protected:
 
 public:
 
+	void Restart();
+
 	UFUNCTION(BlueprintCallable)
 	EGameStatus GetGamestatus();
 
@@ -72,10 +74,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	TArray<class ABaseBeaconActor*> GetPlayerBeacons()const;
 
+
 	template<typename T>
 	TArray<T*> GetPlayerStructuresByType()const
 	{
 		TArray<T*> actors{};
+		actors.Reserve(playerStructures.Num());
 		for (auto& actor : playerStructures)
 		{
 			if (auto type = Cast<T>(actor))
@@ -107,6 +111,8 @@ private:
 	void DisablePlayerStructures();
 
 	void SearchSpawner();
+
+	void SearchExistingPlayerStructures();
 
 protected:
 

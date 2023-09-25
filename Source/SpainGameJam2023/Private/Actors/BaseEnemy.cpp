@@ -54,6 +54,10 @@ void ABaseEnemy::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UP
 		OnHitCombat(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 		OnHitCombatBP(HitComponent, OtherActor, OtherComp, NormalImpulse, Hit);
 	}
+	else
+	{
+		OtherActor->Destroy();
+	}
 
 	DestroyEnemy();
 }
@@ -131,7 +135,10 @@ void ABaseEnemy::SetCombatStats_Implementation(const FCombatStats& stats)
 
 void ABaseEnemy::DestroyEnemy()
 {
-	OnDestroyBP();
-	Destroy();
+	if (bAutomaticDestroy)
+	{
+		OnDestroyBP();
+		Destroy();
+	}
 }
 

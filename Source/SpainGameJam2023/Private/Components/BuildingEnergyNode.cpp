@@ -90,14 +90,10 @@ ABaseEnergyPipe* UBuildingEnergyNode::GetInPipe() const
 
 void UBuildingEnergyNode::SetEnergyIncome(float energyLevel)
 {
-	bool hadEnergy = GetNodeEnergy() >= 0;
 	incomingEnergy = energyLevel;
-	bool hasEnergyNow = GetNodeEnergy() >= 0;
-	if (hadEnergy != hasEnergyNow)
-	{
-		if (hasEnergyNow) OnReceiveEnergy.Broadcast();
-		else OnStopReceiveEnergy.Broadcast();
-	}
+	if (incomingEnergy > 0) OnReceiveEnergy.Broadcast();
+	else OnStopReceiveEnergy.Broadcast();
+
 }
 
 float UBuildingEnergyNode::GetEnergyConsumption() const

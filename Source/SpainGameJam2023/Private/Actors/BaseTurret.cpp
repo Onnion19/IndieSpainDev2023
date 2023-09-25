@@ -9,7 +9,6 @@
 #include "GameInstanceManagers.h"
 #include "Actors/GameplayManager.h"
 #include "Actors/BaseEnemy.h"
-#include "TurretsManager.h"
 #include "Components/BuildingEnergyNode.h"
 
 // Sets default values
@@ -35,6 +34,7 @@ ABaseTurret::ABaseTurret()
 
 	energyNodeComponent = CreateDefaultSubobject<UBuildingEnergyNode>("Energy node");
 	energyNodeComponent->OnStopReceiveEnergy.AddDynamic(this, &ABaseTurret::StopFiringMode);
+	energyNodeComponent->OnReceiveEnergy.AddDynamic(this, &ABaseTurret::StartFiringMode);
 }
 
 // Called when the game starts or when spawned
@@ -144,7 +144,6 @@ void ABaseTurret::Fire(AActor* target)
 
 void ABaseTurret::SwapToMode(ETurretMode newMode)
 {
-
 	StopFiringMode();
 	turretMode = newMode;
 	if (turretMode == ETurretMode::FIRING)
@@ -164,6 +163,7 @@ void ABaseTurret::SwapToMode(ETurretMode newMode)
 
 void ABaseTurret::StartFiringMode() {
 
+	if (turretMode != ETurretMode::FIRING) return;
 	const float attackPerSecond = combatStats.attackSpeed * energyNodeComponent->GetNodeEnergy() / (combatStats.requiredEnergy + 0.01f);
 	if (attackPerSecond < 0.01f) return;
 	GetWorldTimerManager().SetTimer(firingTimer, this, &ABaseTurret::OnFire, 1 / attackPerSecond, true);
@@ -242,6 +242,6 @@ void ABaseTurret::IncreaseColliderZOffset()
 
 void ABaseTurret::ReduceColliderZOffset()
 {
-	rangeAreaOffset = std::max(deltaRangeOffset - rangeAreaOffset, 0.f);
+	rangeAreaOffset = std::max(rangeAreaOffset - deltaRangeOffset, 0.f);
 	UpdateAttackRangeMesh(attackRange);
 }

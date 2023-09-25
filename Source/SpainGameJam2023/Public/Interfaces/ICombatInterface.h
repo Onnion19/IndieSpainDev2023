@@ -25,7 +25,7 @@ struct FCombatStats {
 	float attackSpeed = 1.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float defense = 2.f;
+	float defense = 3.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float piercingDamagePercent = 0.4f;

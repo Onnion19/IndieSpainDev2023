@@ -7,7 +7,7 @@
 #include "Actors/PlaceableBaseActor.h"
 #include "GameInstanceManagers.h"
 #include "Actors/GameplayManager.h"
-#include "TurretsManager.h"
+
 
 // Sets default values
 ABuildingPawn::ABuildingPawn()
@@ -103,13 +103,6 @@ void ABuildingPawn::PlaceCurrentActor() {
 	if (!gInstance)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Could not fetch game instance with class UGameInstanceManagers"));
-		return;
-	}
-
-	auto turretsManager = gInstance->GetTurretsManager();
-	if (!turretsManager)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Could not fetch turrets manager from game instance"));
 		return;
 	}
 

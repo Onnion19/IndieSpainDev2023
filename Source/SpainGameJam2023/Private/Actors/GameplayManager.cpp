@@ -36,8 +36,15 @@ void AGameplayManager::BeginPlay()
 	{
 		SearchSpawner();
 	}
+
+	SearchExistingPlayerStructures();
 	gold = 1;
 	ensureMsgf(spawner, TEXT("Gameplay maanger spawner reference is missing"));
+}
+
+void AGameplayManager::Restart()
+{
+
 }
 
 EGameStatus AGameplayManager::GetGamestatus()
@@ -94,7 +101,7 @@ void AGameplayManager::StopWave()
 
 void AGameplayManager::PlayerStructureCreated(AActor* structure)
 {
-	playerStructures.Add(structure);
+	playerStructures.AddUnique(structure);
 	OnPlayerStrucureCreated.Broadcast(structure);
 }
 
@@ -124,7 +131,6 @@ TArray<class ABaseEnergyStation*> AGameplayManager::GetPlayerEnergyStations() co
 TArray<ABaseBeaconActor*> AGameplayManager::GetPlayerBeacons() const
 {
 	auto beacons = GetPlayerStructuresByType<ABaseBeaconActor>();
-
 	// remvoe non active beacons
 	for (int i = beacons.Num() - 1; i > -1; i--)
 	{
@@ -227,4 +233,15 @@ void AGameplayManager::SearchSpawner()
 		UE_LOG(LogTemp, Error, TEXT("No spawner find in world"));
 	}
 
+}
+
+void AGameplayManager::SearchExistingPlayerStructures()
+{
+	TArray<AActor*> structures{};
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlaceableBaseActor::StaticClass(), structures);
+
+	for (auto& s : structures)
+	{
+		playerStructures.AddUnique(s);
+	}
 }
